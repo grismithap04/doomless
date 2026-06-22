@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Get Suggestion — Doomless</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <a href="index.html" class="logo">Doomless</a>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="suggest.html" class="active">Suggest</a>
+        <a href="interests.html">Interests</a>
+        <a href="history.html">History</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- SURPRISE MODE banner -->
+      <div
+        id="surprise-banner"
+        style="display: none"
+        class="alert alert-success"
+        style="margin-bottom: 1rem"
+      >
+        ✨ <strong>Surprise mode</strong> — Gemini picks something unexpected,
+        no filters.
+      </div>
+
+      <!-- SUGGEST FORM -->
+      <div class="card" id="suggest-card">
+        <div class="card-title">⚡ Get an Activity</div>
+
+        <form
+          id="suggest-form"
+          action="http://localhost:8080/suggest"
+          method="POST"
+        >
+          <input type="hidden" name="user_id" value="1" />
+          <input
+            type="hidden"
+            id="surprise-flag"
+            name="surprise"
+            value="false"
+          />
+
+          <!-- Time pills -->
+          <div class="field">
+            <label class="field-label">How much time do you have?</label>
+            <div class="pill-row">
+              <button type="button" class="pill" onclick="pickTime(this, 15)">
+                15 min
+              </button>
+              <button type="button" class="pill" onclick="pickTime(this, 30)">
+                30 min
+              </button>
+              <button type="button" class="pill" onclick="pickTime(this, 60)">
+                1 hour
+              </button>
+              <button type="button" class="pill" onclick="pickTime(this, 90)">
+                90 min
+              </button>
+              <button type="button" class="pill" onclick="pickTime(this, 120)">
+                2 hours
+              </button>
+            </div>
+            <input
+              type="number"
+              id="time-val"
+              name="time"
+              placeholder="Or type minutes…"
+              min="5"
+              max="480"
+            />
+          </div>
+
+          <!-- Interests (hidden in surprise mode) -->
+          <div class="field" id="interests-section">
+            <label class="field-label">Your Interests</label>
+            <div class="interests-grid" id="interests-grid">
+              <!-- Populated by JS from localStorage or defaults -->
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            Get Suggestion →
+          </button>
+          <a
+            href="suggest.html?surprise=1"
+            class="btn btn-surprise"
+            id="surprise-btn"
+            >✨ Surprise Me Instead</a
+          >
+        </form>
+      </div>
+
+      <!-- RESULT CARD (shown after submit) -->
+      <div class="card" id="result-card" style="display: none">
+        <div class="card-title">💡 Your Suggestion</div>
+
+        <div class="suggestion-output" id="suggestion-text">Thinking…</div>
+
+        <!-- Log it form -->
+        <form id="log-form" action="http://localhost:8080/log" method="POST">
+          <input type="hidden" name="user_id" value="1" />
+          <input type="hidden" name="suggestion" id="log-suggestion" value="" />
+          <input type="hidden" name="time" id="log-time" value="" />
+          <input type="hidden" name="interests" id="log-interests" value="" />
+
+          <button type="submit" class="btn btn-success">
+            ✓ Done — Log this activity
+          </button>
+          <button type="button" class="btn btn-outline" onclick="retryFetch()">
+            ↺ Try another
+          </button>
+        </form>
+
+        <div
+          id="log-confirm"
+          class="alert alert-success"
+          style="display: none; margin-top: 0.75rem"
+        >
+          🎉 Logged! Check your
+          <a href="history.html" style="color: var(--success)">history</a>.
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const API = "http://localhost:8080";
+      const DEFAULT_INTERESTS = [
+        { emoji: "🏃", label: "Running" },
+        { emoji: "🎸", label: "Guitar" },
+        { emoji: "🍞", label: "Baking" },
+        { emoji: "📚", label: "Sci-Fi Books" },
+        { emoji: "✏️", label: "Sketching" },
+        { emoji: "🧘", label: "Meditation" },
+        { emoji: "🍳", label: "Cooking" },
+        { emoji: "🎮", label: "Gaming" },
+      ];
+
+      // Detect surprise mode
+      const isSurprise =
+        new URLSearchParams(location.search).get("surprise") === "1";
+      if (isSurprise) {
+        document.getElementById("surprise-banner").style.display = "block";
+        document.getElementById("interests-section").style.display = "none";
+        document.getElementById("surprise-flag").value = "true";
+        document.getElementById("submit-btn").textContent = "✨ Surprise Me →";
+        document.getElementById("surprise-btn").style.display = "none";
+      }
+
+      // Build interests grid
+      function buildInterests() {
+        const saved = JSON.parse(
+          localStorage.getItem("doomless_interests") || "[]",
+        );
+        const list = saved.length ? saved : DEFAULT_INTERESTS;
+        const grid = document.getElementById("interests-grid");
+        grid.innerHTML = list
+          .map(
+            (i) => `
+      <label class="interest-item" onclick="this.classList.toggle('checked')">
+        <input type="checkbox" name="interests" value="${i.label}"> ${i.emoji} ${i.label}
+      </label>
+    `,
+          )
+          .join("");
+      }
+      buildInterests();
+
+      // Time pill picker
+      function pickTime(btn, val) {
+        document
+          .querySelectorAll(".pill")
+          .forEach((p) => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById("time-val").value = val;
+      }
+
+      // Form submit — fetch instead of full POST so we can show result inline
+      document
+        .getElementById("suggest-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const time = document.getElementById("time-val").value;
+          if (!time) {
+            alert("Please pick or enter a time first.");
+            return;
+          }
+
+          const checked = [
+            ...document.querySelectorAll('input[name="interests"]:checked'),
+          ].map((c) => c.value);
+          const interests = checked.join(",");
+          const surprise =
+            document.getElementById("surprise-flag").value === "true";
+
+          document.getElementById("submit-btn").textContent =
+            "Getting suggestion…";
+          document.getElementById("submit-btn").disabled = true;
+
+          // Store for log form
+          document.getElementById("log-time").value = time;
+          document.getElementById("log-interests").value = interests;
+
+          const endpoint = surprise ? `${API}/surprise` : `${API}/suggest`;
+          const payload = {
+            user_id: 1,
+            time: parseInt(time),
+            interests,
+            surprise,
+          };
+
+          try {
+            const res = await fetch(endpoint, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+
+            const text =
+              data.suggestion?.suggestion ||
+              data.suggestion ||
+              "No suggestion returned.";
+            document.getElementById("suggestion-text").textContent = text;
+            document.getElementById("log-suggestion").value = text;
+            document.getElementById("result-card").style.display = "block";
+            document
+              .getElementById("result-card")
+              .scrollIntoView({ behavior: "smooth" });
+          } catch (err) {
+            document.getElementById("suggestion-text").textContent =
+              "Could not reach server. Is the Awk server running on port 8080?";
+            document.getElementById("result-card").style.display = "block";
+          }
+
+          document.getElementById("submit-btn").textContent =
+            "Get Suggestion →";
+          document.getElementById("submit-btn").disabled = false;
+        });
+
+      // Log form — fetch so we can confirm inline
+      document
+        .getElementById("log-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const payload = {
+            user_id: 1,
+            suggestion: document.getElementById("log-suggestion").value,
+            time: parseInt(document.getElementById("log-time").value),
+            interests: document.getElementById("log-interests").value,
+          };
+          try {
+            await fetch(`${API}/log`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+          } catch (_) {}
+          document.getElementById("log-confirm").style.display = "block";
+          document.getElementById("log-form").style.display = "none";
+        });
+
+      function retryFetch() {
+        document.getElementById("result-card").style.display = "none";
+        document
+          .getElementById("suggest-form")
+          .dispatchEvent(new Event("submit"));
+      }
+    </script>
+  </body>
+</html>
