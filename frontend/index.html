@@ -7,124 +7,130 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <header>
-      <a href="index.html" class="logo">Doomless</a>
-      <nav>
-        <a href="index.html" class="active">Home</a>
-        <a href="suggest.html">Suggest</a>
-        <a href="interests.html">Interests</a>
-        <a href="history.html">History</a>
-      </nav>
-    </header>
+    <div class="app-wrapper">
+      <header>
+        <a href="index.html" class="logo">Doomless</a>
+        <nav>
+          <a href="index.html" class="active">Home</a>
+          <a href="suggest.html">Suggest</a>
+          <a href="interests.html">Interests</a>
+          <a href="history.html">History</a>
+        </nav>
+      </header>
 
-    <main>
-      <!-- HERO SECTION -->
-      <div class="hero">
-        <h1>Doomless</h1>
-        <p class="tagline">
-          You have free time. Use it well.<br />
-          Stop doomscrolling. Start doing.
-        </p>
-      </div>
-
-      <!-- QUICK ACTIONS -->
-      <div class="card">
-        <div class="card-title">⚡ Quick Actions</div>
-        <div style="display: flex; flex-direction: column; gap: 0.75rem">
-          <a href="suggest.html" class="btn btn-primary">Get My Activity →</a>
-          <a href="suggest.html?surprise=1" class="btn btn-surprise"
-            >✨ Surprise Me (no interests)</a
-          >
-          <a href="history.html" class="btn btn-outline">📋 View History</a>
+      <main>
+        <!-- HERO SECTION -->
+        <div class="hero">
+          <h1>Doomless</h1>
+          <p class="tagline">
+            You have free time. Use it well.<br />
+            Stop doomscrolling. Start doing.
+          </p>
         </div>
-      </div>
 
-      <!-- HOW IT WORKS -->
-      <div class="card">
-        <div class="card-title">📊 How It Works</div>
-        <div class="steps">
-          <div class="step">
-            <div class="step-number">1</div>
+        <!-- QUICK ACTIONS -->
+        <div class="card">
+          <div class="card-title">⚡ Quick Actions</div>
+          <div class="quick-actions">
+            <a href="suggest.html" class="btn btn-primary">Get My Activity →</a>
+            <a href="suggest.html?surprise=1" class="btn btn-surprise"
+              >✨ Surprise Me</a
+            >
+            <a href="history.html" class="btn btn-outline btn-full"
+              >📋 View History</a
+            >
+          </div>
+        </div>
+
+        <!-- HOW IT WORKS -->
+        <div class="card">
+          <div class="card-title">📊 How It Works</div>
+          <div class="steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <div>
+                <strong>Set your time</strong>
+                <p>Tell us how many minutes you have free.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-number">2</div>
+              <div>
+                <strong>Pick interests</strong>
+                <p>Choose what you're into — we filter suggestions to match.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-number">3</div>
+              <div>
+                <strong>Get a suggestion</strong>
+                <p>
+                  Gemini AI suggests one focused activity. No scroll spiral.
+                </p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-number">4</div>
+              <div>
+                <strong>Log it</strong>
+                <p>Mark it done — saved to your history and Google Sheets.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STATS PREVIEW -->
+        <div class="card">
+          <div class="card-title">📈 Your Progress</div>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-number" id="stat-total">—</div>
+              <div class="stat-label">Activities Done</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number" id="stat-today">—</div>
+              <div class="stat-label">Today</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number" id="stat-time">—</div>
+              <div class="stat-label">Minutes Off Scroll</div>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 1.25rem">
+            <a
+              href="history.html"
+              class="btn btn-sm btn-outline"
+              style="display: inline-block"
+            >
+              View Full History →
+            </a>
+          </div>
+        </div>
+
+        <!-- GOOGLE SHEETS LINK -->
+        <div class="card" style="padding: 1.25rem">
+          <div class="flex-between">
             <div>
-              <strong>Set your time</strong>
-              <p>Tell us how many minutes you have free.</p>
+              <div style="font-weight: 600; margin-bottom: 0.25rem">
+                📊 Google Sheets Backup
+              </div>
+              <div style="font-size: 0.85rem; color: var(--muted)">
+                All activities sync here automatically
+              </div>
             </div>
-          </div>
-          <div class="step">
-            <div class="step-number">2</div>
-            <div>
-              <strong>Pick interests</strong>
-              <p>Choose what you're into — we filter suggestions to match.</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-number">3</div>
-            <div>
-              <strong>Get a suggestion</strong>
-              <p>Gemini AI suggests one focused activity. No scroll spiral.</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-number">4</div>
-            <div>
-              <strong>Log it</strong>
-              <p>Mark it done — saved to your history and Google Sheets.</p>
-            </div>
+            <a
+              href="#"
+              id="sheet-link"
+              target="_blank"
+              class="btn btn-outline btn-sm"
+              style="white-space: nowrap; display: inline-block"
+            >
+              Open Sheet →
+            </a>
           </div>
         </div>
-      </div>
-
-      <!-- STATS PREVIEW (optional) -->
-      <div class="card">
-        <div class="card-title">📈 Your Progress</div>
-        <div class="stats-grid">
-          <div class="stat-item">
-            <div class="stat-number" id="stat-total">—</div>
-            <div class="stat-label">Activities Done</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number" id="stat-today">—</div>
-            <div class="stat-label">Today</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number" id="stat-time">—</div>
-            <div class="stat-label">Minutes Off Scroll</div>
-          </div>
-        </div>
-        <div style="text-align: center; margin-top: 1rem">
-          <a
-            href="history.html"
-            class="btn btn-sm btn-outline"
-            style="display: inline-block"
-          >
-            View Full History →
-          </a>
-        </div>
-      </div>
-
-      <!-- GOOGLE SHEETS LINK -->
-      <div class="card" style="padding: 1.25rem">
-        <div class="flex-between">
-          <div>
-            <div style="font-weight: 600; margin-bottom: 0.25rem">
-              📊 Google Sheets Backup
-            </div>
-            <div style="font-size: 0.85rem; color: var(--muted)">
-              All activities sync here automatically
-            </div>
-          </div>
-          <a
-            href="#"
-            id="sheet-link"
-            target="_blank"
-            class="btn btn-outline btn-sm"
-            style="white-space: nowrap; display: inline-block"
-          >
-            Open Sheet →
-          </a>
-        </div>
-      </div>
-    </main>
+      </main>
+    </div>
 
     <script>
       const API = "http://localhost:8080";
@@ -152,7 +158,7 @@
           document.getElementById("stat-today").textContent = today;
           document.getElementById("stat-time").textContent = totalTime;
         } catch (err) {
-          // Server not running - show friendly message
+          // Server not running - show 0s
           document.getElementById("stat-total").textContent = "0";
           document.getElementById("stat-today").textContent = "0";
           document.getElementById("stat-time").textContent = "0";
@@ -162,7 +168,7 @@
       // Load stats on page load
       loadStats();
 
-      // Handle sheet link (replace with actual ID)
+      // Handle sheet link
       document
         .getElementById("sheet-link")
         .addEventListener("click", function (e) {
