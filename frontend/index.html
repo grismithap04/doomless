@@ -1,507 +1,183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Doomless — Beat the Scroll</title>
-<style>
-  /* ---- TOKENS ---- */
-  :root {
-    --bg:       #0f0f13;
-    --surface:  #1a1a22;
-    --border:   #2e2e3e;
-    --accent:   #7c6af7;
-    --accent2:  #f7c26a;
-    --text:     #e8e8f0;
-    --muted:    #7a7a92;
-    --success:  #4ade80;
-    --radius:   12px;
-    --font:     'Segoe UI', system-ui, sans-serif;
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doomless — Beat the Scroll</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <a href="index.html" class="logo">Doomless</a>
+      <nav>
+        <a href="index.html" class="active">Home</a>
+        <a href="suggest.html">Suggest</a>
+        <a href="interests.html">Interests</a>
+        <a href="history.html">History</a>
+      </nav>
+    </header>
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font);
-    min-height: 100vh;
-    padding: 0 1rem 4rem;
-  }
-
-  /* ---- HEADER ---- */
-  header {
-    text-align: center;
-    padding: 3rem 1rem 2rem;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 2rem;
-  }
-  header h1 {
-    font-size: 2.8rem;
-    font-weight: 800;
-    letter-spacing: -1px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  header p {
-    color: var(--muted);
-    margin-top: 0.5rem;
-    font-size: 1.05rem;
-  }
-
-  /* ---- NAV ---- */
-  nav {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 2.5rem;
-    flex-wrap: wrap;
-  }
-  nav a {
-    padding: 0.5rem 1.2rem;
-    border-radius: 99px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: all 0.15s;
-  }
-  nav a:hover, nav a.active {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(124,106,247,0.08);
-  }
-
-  /* ---- CARDS ---- */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 2rem;
-    max-width: 560px;
-    margin: 0 auto 2rem;
-  }
-  .card h2 {
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-  }
-  .card h2 .icon { font-size: 1.4rem; }
-
-  /* ---- FORM ELEMENTS ---- */
-  label {
-    display: block;
-    font-size: 0.85rem;
-    color: var(--muted);
-    margin-bottom: 0.4rem;
-    font-weight: 500;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-  }
-  input[type="text"],
-  input[type="number"],
-  select,
-  textarea {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-size: 1rem;
-    padding: 0.75rem 1rem;
-    margin-bottom: 1.25rem;
-    outline: none;
-    font-family: var(--font);
-    transition: border-color 0.15s;
-  }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--accent);
-  }
-
-  /* Interests checklist */
-  .interests-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
-  }
-  .check-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 0.9rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-size: 0.95rem;
-  }
-  .check-item:hover { border-color: var(--accent); }
-  .check-item input[type="checkbox"] {
-    width: auto;
-    margin: 0;
-    accent-color: var(--accent);
-  }
-
-  /* Time pills */
-  .time-pills {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.25rem;
-  }
-  .pill {
-    padding: 0.45rem 1rem;
-    border-radius: 99px;
-    border: 1px solid var(--border);
-    background: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.15s;
-  }
-  .pill:hover, .pill.selected {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(124,106,247,0.1);
-  }
-
-  /* Buttons */
-  .btn {
-    width: 100%;
-    padding: 0.9rem;
-    border-radius: 8px;
-    border: none;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: opacity 0.15s, transform 0.1s;
-    font-family: var(--font);
-  }
-  .btn:active { transform: scale(0.98); }
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-  }
-  .btn-primary:hover { opacity: 0.88; }
-  .btn-secondary {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
-    margin-top: 0.75rem;
-  }
-  .btn-secondary:hover { border-color: var(--accent); }
-  .btn-success {
-    background: var(--success);
-    color: #0f0f13;
-  }
-  .btn-surprise {
-    background: linear-gradient(135deg, var(--accent2), #f7826a);
-    color: #0f0f13;
-  }
-
-  /* ---- SUGGESTION OUTPUT ---- */
-  .suggestion-box {
-    background: rgba(124,106,247,0.08);
-    border: 1px solid rgba(124,106,247,0.3);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-    font-size: 1.05rem;
-    line-height: 1.7;
-    min-height: 80px;
-    color: var(--text);
-  }
-  .suggestion-box:empty::before {
-    content: "Your suggestion will appear here…";
-    color: var(--muted);
-  }
-
-  /* ---- ACTIVITY LOG ---- */
-  .log-entry {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border);
-    display: grid;
-    gap: 0.3rem;
-  }
-  .log-entry:last-child { border-bottom: none; }
-  .log-entry .activity-text { font-size: 0.97rem; line-height: 1.5; }
-  .log-meta {
-    display: flex;
-    gap: 0.75rem;
-    font-size: 0.8rem;
-    color: var(--muted);
-  }
-  .tag {
-    background: rgba(124,106,247,0.12);
-    color: var(--accent);
-    padding: 0.2rem 0.6rem;
-    border-radius: 99px;
-    font-size: 0.75rem;
-    font-weight: 600;
-  }
-
-  /* ---- SECTION PAGES (shown/hidden) ---- */
-  .page { display: none; }
-  .page.active { display: block; }
-
-  /* ---- MISC ---- */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 1.5rem 0;
-  }
-  .empty-state {
-    text-align: center;
-    color: var(--muted);
-    padding: 2rem;
-    font-size: 0.95rem;
-  }
-  .status-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--success);
-    display: inline-block;
-    margin-right: 6px;
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-</style>
-</head>
-<body>
-
-<header>
-  <h1>Doomless</h1>
-  <p>You have free time. Use it well.</p>
-</header>
-
-<nav>
-  <a href="#" class="active" onclick="showPage('landing', this)">Home</a>
-  <a href="#" onclick="showPage('suggest', this)">Get Suggestion</a>
-  <a href="#" onclick="showPage('log', this)">Log Activity</a>
-  <a href="#" onclick="showPage('history', this)">History</a>
-</nav>
-
-<!-- ==================== LANDING ==================== -->
-<div id="page-landing" class="page active">
-  <div class="card">
-    <h2><span class="icon">⚡</span> Stop Doomscrolling</h2>
-    <p style="color:var(--muted); line-height:1.7; margin-bottom:1.5rem">
-      Tell us how much time you have and what you enjoy. We'll suggest
-      one real activity — powered by Gemini AI, logged to history.
-    </p>
-    <button class="btn btn-primary" onclick="showPage('suggest', document.querySelector('nav a:nth-child(2)'))">
-      Get My Activity →
-    </button>
-    <button class="btn btn-secondary btn-surprise" onclick="showPage('surprise', null)" style="margin-top:0.75rem">
-      ✨ Surprise Me (no interests)
-    </button>
-  </div>
-
-  <div class="card" style="max-width:560px">
-    <h2><span class="icon">📊</span> How it works</h2>
-    <div style="display:grid; gap:1rem; color:var(--muted); font-size:0.95rem; line-height:1.6">
-      <div><strong style="color:var(--text)">1. Set your time</strong><br>Tell us how many minutes you have free.</div>
-      <div><strong style="color:var(--text)">2. Pick interests</strong><br>Choose what you're into — we filter suggestions to match.</div>
-      <div><strong style="color:var(--text)">3. Get a suggestion</strong><br>Gemini AI suggests one focused activity. No scroll spiral.</div>
-      <div><strong style="color:var(--text)">4. Log it</strong><br>Mark it done — saved to your history and Google Sheets.</div>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== SUGGEST ==================== -->
-<div id="page-suggest" class="page">
-  <div class="card">
-    <h2><span class="icon">🎯</span> Get a Suggestion</h2>
-
-    <form action="http://localhost:8080/suggest" method="POST">
-      <input type="hidden" name="user_id" value="1">
-
-      <label>How much time do you have?</label>
-      <div class="time-pills">
-        <button type="button" class="pill" onclick="setTime(this, 15)">15 min</button>
-        <button type="button" class="pill" onclick="setTime(this, 30)">30 min</button>
-        <button type="button" class="pill" onclick="setTime(this, 60)">1 hour</button>
-        <button type="button" class="pill" onclick="setTime(this, 90)">90 min</button>
-        <button type="button" class="pill" onclick="setTime(this, 120)">2 hours</button>
-      </div>
-      <input type="number" id="time-input" name="time" placeholder="Or enter minutes manually" min="5" max="480">
-
-      <label>Your Interests</label>
-      <div class="interests-grid">
-        <label class="check-item">
-          <input type="checkbox" name="interests" value="Running"> 🏃 Running
-        </label>
-        <label class="check-item">
-          <input type="checkbox" name="interests" value="Guitar"> 🎸 Guitar
-        </label>
-        <label class="check-item">
-          <input type="checkbox" name="interests" value="Baking"> 🍞 Baking
-        </label>
-        <label class="check-item">
-          <input type="checkbox" name="interests" value="Sci-Fi Books"> 📚 Sci-Fi Books
-        </label>
-        <label class="check-item">
-          <input type="checkbox" name="interests" value="Sketching"> ✏️ Sketching
-        </label>
-        <label class="check-item">
-          <input type="checkbox" name="interests" value="Meditation"> 🧘 Meditation
-        </label>
-        <label class="check-item">
-          <input type="checkbox" name="interests" value="Cooking"> 🍳 Cooking
-        </label>
-        <label class="check-item">
-          <input type="checkbox" name="interests" value="Gaming"> 🎮 Gaming
-        </label>
+    <main>
+      <!-- HERO SECTION -->
+      <div class="hero">
+        <h1>Doomless</h1>
+        <p class="tagline">
+          You have free time. Use it well.<br />
+          Stop doomscrolling. Start doing.
+        </p>
       </div>
 
-      <button type="submit" class="btn btn-primary">Get Suggestion →</button>
-    </form>
-  </div>
-</div>
-
-<!-- ==================== SURPRISE ==================== -->
-<div id="page-surprise" class="page">
-  <div class="card">
-    <h2><span class="icon">✨</span> Surprise Me</h2>
-    <p style="color:var(--muted); margin-bottom:1.5rem; line-height:1.6">
-      No interests. No filters. Gemini picks something completely out of left field for you.
-    </p>
-
-    <form action="http://localhost:8080/surprise" method="POST">
-      <input type="hidden" name="user_id" value="1">
-      <input type="hidden" name="surprise" value="true">
-
-      <label>Time Available</label>
-      <div class="time-pills">
-        <button type="button" class="pill" onclick="setTimeSurprise(this, 15)">15 min</button>
-        <button type="button" class="pill" onclick="setTimeSurprise(this, 30)">30 min</button>
-        <button type="button" class="pill" onclick="setTimeSurprise(this, 60)">1 hour</button>
+      <!-- QUICK ACTIONS -->
+      <div class="card">
+        <div class="card-title">⚡ Quick Actions</div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem">
+          <a href="suggest.html" class="btn btn-primary">Get My Activity →</a>
+          <a href="suggest.html?surprise=1" class="btn btn-surprise"
+            >✨ Surprise Me (no interests)</a
+          >
+          <a href="history.html" class="btn btn-outline">📋 View History</a>
+        </div>
       </div>
-      <input type="number" id="surprise-time" name="time" placeholder="Minutes" value="30" min="5">
 
-      <button type="submit" class="btn btn-surprise">✨ Surprise Me</button>
-    </form>
-  </div>
-</div>
-
-<!-- ==================== LOG ACTIVITY ==================== -->
-<div id="page-log" class="page">
-  <div class="card">
-    <h2><span class="icon">✅</span> Log Completed Activity</h2>
-    <p style="color:var(--muted); margin-bottom:1.5rem; font-size:0.9rem">
-      Paste the suggestion you completed — saves to both Postgres and Google Sheets.
-    </p>
-
-    <form action="http://localhost:8080/log" method="POST">
-      <input type="hidden" name="user_id" value="1">
-
-      <label>Suggestion You Completed</label>
-      <textarea name="suggestion" rows="3" placeholder="e.g. Take a 30-minute run around the neighborhood and try a new route…" required></textarea>
-
-      <label>Time You Had (minutes)</label>
-      <input type="number" name="time" placeholder="30" min="1" required>
-
-      <label>Interests Used (comma separated)</label>
-      <input type="text" name="interests" placeholder="e.g. Running, Baking">
-
-      <button type="submit" class="btn btn-success">✓ Mark as Done</button>
-    </form>
-  </div>
-</div>
-
-<!-- ==================== HISTORY ==================== -->
-<div id="page-history" class="page">
-  <div class="card">
-    <h2>
-      <span class="icon">📋</span> Activity History
-      <span style="margin-left:auto; font-size:0.8rem; font-weight:400; color:var(--muted)">
-        <span class="status-dot"></span>Live from Postgres
-      </span>
-    </h2>
-
-    <!-- History is loaded via GET /history — in pure HTML, user clicks the link -->
-    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1rem">
-      Your completed activities, synced to Google Sheets.
-    </p>
-
-    <a href="http://localhost:8080/history?user_id=1" target="_blank"
-       style="display:block; text-align:center; color:var(--accent); padding:0.5rem; font-size:0.9rem; margin-bottom:1rem;">
-       View raw JSON history →
-    </a>
-
-    <div class="divider"></div>
-
-    <!-- Placeholder entries (replaced dynamically when backend is live) -->
-    <div id="history-list">
-      <div class="empty-state">
-        Complete an activity to see it here.<br>
-        <small>Activities sync to Postgres + Google Sheets.</small>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-    <a href="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID" target="_blank"
-       style="display:block; text-align:center; color:var(--muted); font-size:0.85rem; padding:0.5rem;">
-       📊 Open Google Sheet →
-    </a>
-  </div>
-</div>
-
-<script>
-  // Page navigation
-  function showPage(name, navEl) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-    document.getElementById('page-' + name).classList.add('active');
-    if (navEl) navEl.classList.add('active');
-  }
-
-  // Time pill selection
-  function setTime(btn, val) {
-    document.querySelectorAll('#page-suggest .pill').forEach(p => p.classList.remove('selected'));
-    btn.classList.add('selected');
-    document.getElementById('time-input').value = val;
-  }
-  function setTimeSurprise(btn, val) {
-    document.querySelectorAll('#page-surprise .pill').forEach(p => p.classList.remove('selected'));
-    btn.classList.add('selected');
-    document.getElementById('surprise-time').value = val;
-  }
-
-  // Load history from API if available
-  async function loadHistory() {
-    try {
-      const res = await fetch('http://localhost:8080/history?user_id=1');
-      const data = await res.json();
-      const list = document.getElementById('history-list');
-      if (!data.history || data.history.length === 0) return;
-      list.innerHTML = data.history.map(entry => `
-        <div class="log-entry">
-          <div class="activity-text">${entry.suggestion}</div>
-          <div class="log-meta">
-            <span>⏱ ${entry.time_available} min</span>
-            <span>📅 ${new Date(entry.logged_at).toLocaleDateString()}</span>
-            ${(entry.interests_used || []).map(i => `<span class="tag">${i}</span>`).join('')}
+      <!-- HOW IT WORKS -->
+      <div class="card">
+        <div class="card-title">📊 How It Works</div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div>
+              <strong>Set your time</strong>
+              <p>Tell us how many minutes you have free.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div>
+              <strong>Pick interests</strong>
+              <p>Choose what you're into — we filter suggestions to match.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div>
+              <strong>Get a suggestion</strong>
+              <p>Gemini AI suggests one focused activity. No scroll spiral.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">4</div>
+            <div>
+              <strong>Log it</strong>
+              <p>Mark it done — saved to your history and Google Sheets.</p>
+            </div>
           </div>
         </div>
-      `).join('');
-    } catch (e) {
-      // Backend not yet running — silently fail
-    }
-  }
+      </div>
 
-  // Try loading history on mount
-  loadHistory();
-</script>
+      <!-- STATS PREVIEW (optional) -->
+      <div class="card">
+        <div class="card-title">📈 Your Progress</div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number" id="stat-total">—</div>
+            <div class="stat-label">Activities Done</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="stat-today">—</div>
+            <div class="stat-label">Today</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="stat-time">—</div>
+            <div class="stat-label">Minutes Off Scroll</div>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 1rem">
+          <a
+            href="history.html"
+            class="btn btn-sm btn-outline"
+            style="display: inline-block"
+          >
+            View Full History →
+          </a>
+        </div>
+      </div>
 
-</body>
+      <!-- GOOGLE SHEETS LINK -->
+      <div class="card" style="padding: 1.25rem">
+        <div class="flex-between">
+          <div>
+            <div style="font-weight: 600; margin-bottom: 0.25rem">
+              📊 Google Sheets Backup
+            </div>
+            <div style="font-size: 0.85rem; color: var(--muted)">
+              All activities sync here automatically
+            </div>
+          </div>
+          <a
+            href="#"
+            id="sheet-link"
+            target="_blank"
+            class="btn btn-outline btn-sm"
+            style="white-space: nowrap; display: inline-block"
+          >
+            Open Sheet →
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const API = "http://localhost:8080";
+      const USER_ID = 1;
+
+      // Load stats from history
+      async function loadStats() {
+        try {
+          const res = await fetch(`${API}/history?user_id=${USER_ID}`);
+          const data = await res.json();
+          const items = data.history || [];
+
+          const total = items.length;
+          const totalTime = items.reduce(
+            (s, i) => s + (i.time_available || 0),
+            0,
+          );
+          const today = items.filter(
+            (i) =>
+              new Date(i.logged_at).toDateString() ===
+              new Date().toDateString(),
+          ).length;
+
+          document.getElementById("stat-total").textContent = total;
+          document.getElementById("stat-today").textContent = today;
+          document.getElementById("stat-time").textContent = totalTime;
+        } catch (err) {
+          // Server not running - show friendly message
+          document.getElementById("stat-total").textContent = "0";
+          document.getElementById("stat-today").textContent = "0";
+          document.getElementById("stat-time").textContent = "0";
+        }
+      }
+
+      // Load stats on page load
+      loadStats();
+
+      // Handle sheet link (replace with actual ID)
+      document
+        .getElementById("sheet-link")
+        .addEventListener("click", function (e) {
+          const sheetId =
+            localStorage.getItem("doomless_sheet_id") || "YOUR_SHEET_ID";
+          if (sheetId === "YOUR_SHEET_ID") {
+            e.preventDefault();
+            alert(
+              "Please set your Google Sheet ID in localStorage:\n\n" +
+                'localStorage.setItem("doomless_sheet_id", "YOUR_ACTUAL_ID")',
+            );
+          } else {
+            this.href = `https://docs.google.com/spreadsheets/d/${sheetId}`;
+          }
+        });
+    </script>
+  </body>
 </html>
