@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Interests — Doomless</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">Doomless</a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="suggest.html">Suggest</a>
+    <a href="interests.html" class="active">Interests</a>
+    <a href="history.html">History</a>
+  </nav>
+</header>
+
+<main>
+
+  <div class="card">
+    <div class="card-title">🎯 Your Interests</div>
+    <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1.25rem;line-height:1.6">
+      Select what you enjoy. Gemini uses this to tailor suggestions to you.
+      Saved in your browser and synced to Postgres.
+    </p>
+
+    <div class="interests-grid" id="interests-grid">
+      <!-- Built by JS -->
+    </div>
+
+    <hr>
+
+    <div class="card-title" style="margin-top:0.5rem">➕ Add a custom interest</div>
+    <div style="display:flex;gap:0.5rem">
+      <input type="text" id="custom-emoji" placeholder="🎨" style="width:60px;text-align:center">
+      <input type="text" id="custom-label" placeholder="e.g. Painting" style="flex:1">
+      <button class="btn btn-outline btn-sm" onclick="addCustom()" style="width:auto;padding:0 1.25rem">Add</button>
+    </div>
+    <div id="add-error" class="alert alert-error" style="display:none;margin-top:0.75rem"></div>
+  </div>
+
+  <button class="btn btn-primary" onclick="saveInterests()">Save Interests →</button>
+
+  <div id="save-confirm" class="alert alert-success" style="display:none;margin-top:0.75rem">
+    ✅ Interests saved! <a href="suggest.html" style="color:var(--success)">Get a suggestion now.</a>
+  </div>
+
+  <!-- Sync to Postgres -->
+  <div class="card" style="margin-top:1.25rem">
+    <div class="card-title" style="font-size:0.95rem">
+      <span class="dot"></span> Postgres Sync
+    </div>
+    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1rem">
+      Interests are stored in your browser and also synced to the <code>interests</code> table
+      via the Awk server so Gemini can query them server-side.
+    </p>
+    <button class="btn btn-outline btn-sm" onclick="syncToServer()" style="width:auto">
+      ↑ Sync to Postgres now
+    </button>
+    <div id="sync-status" style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem"></div>
+  </div>
+
+</main>
+
+<script>
+  const API = 'http://localhost:8080';
+
+  const PRESET_INTERESTS = [
+    { emoji: '🏃', label: 'Running' },
+    { emoji: '🎸', label: 'Guitar' },
+    { emoji: '🍞', label: 'Baking' },
+    { emoji: '📚', label: 'Sci-Fi Books' },
+    { emoji: '✏️',  label: 'Sketching' },
+    { emoji: '🧘', label: 'Meditation' },
+    { emoji: '🍳', label: 'Cooking' },
+    { emoji: '🎮', label: 'Gaming' },
+    { emoji: '🚴', label: 'Cycling' },
+    { emoji: '🌿', label: 'Gardening' },
+    { emoji: '📷', label: 'Photography' },
+    { emoji: '🎬', label: 'Films' },
+    { emoji: '🧩', label: 'Puzzles' },
+    { emoji: '🏊', label: 'Swimming' },
+  ];
+
+  let selected = JSON.parse(localStorage.getItem('doomless_interests') || '[]');
+  let custom   = JSON.parse(localStorage.getItem('doomless_custom') || '[]');
+  const all    = () => [...PRESET_INTERESTS, ...custom];
+
+  function isSelected(label) {
+    return selected.some(s => s.label === label);
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('interests-grid');
+    grid.innerHTML = all().map(i => `
+      <label class="interest-item ${isSelected(i.label) ? 'checked' : ''}" id="item-${btoa(i.label).replace(/=/g,'')}">
+        <input type="checkbox"
+          ${isSelected(i.label) ? 'checked' : ''}
+          value="${i.label}"
+          data-emoji="${i.emoji}"
+          onchange="toggleInterest(this, '${i.emoji}', '${i.label}')">
+        ${i.emoji} ${i.label}
+        ${custom.some(c => c.label === i.label) ? `<span onclick="removeCustom('${i.label}',event)" style="margin-left:auto;color:var(--muted);font-size:0.8rem;cursor:pointer">✕</span>` : ''}
+      </label>
+    `).join('');
+  }
+
+  function toggleInterest(cb, emoji, label) {
+    const item = cb.closest('.interest-item');
+    if (cb.checked) {
+      item.classList.add('checked');
+      if (!isSelected(label)) selected.push({ emoji, label });
+    } else {
+      item.classList.remove('checked');
+      selected = selected.filter(s => s.label !== label);
+    }
+  }
+
+  function addCustom() {
+    const emoji = document.getElementById('custom-emoji').value.trim() || '⭐';
+    const label = document.getElementById('custom-label').value.trim();
+    const errEl = document.getElementById('add-error');
+
+    if (!label) { errEl.textContent = 'Enter a label for your interest.'; errEl.style.display='block'; return; }
+    if (all().some(i => i.label.toLowerCase() === label.toLowerCase())) {
+      errEl.textContent = 'That interest already exists.'; errEl.style.display='block'; return;
+    }
+    errEl.style.display = 'none';
+
+    custom.push({ emoji, label });
+    localStorage.setItem('doomless_custom', JSON.stringify(custom));
+    selected.push({ emoji, label });
+    document.getElementById('custom-emoji').value = '';
+    document.getElementById('custom-label').value = '';
+    renderGrid();
+  }
+
+  function removeCustom(label, e) {
+    e.preventDefault(); e.stopPropagation();
+    custom   = custom.filter(c => c.label !== label);
+    selected = selected.filter(s => s.label !== label);
+    localStorage.setItem('doomless_custom', JSON.stringify(custom));
+    renderGrid();
+  }
+
+  function saveInterests() {
+    localStorage.setItem('doomless_interests', JSON.stringify(selected));
+    document.getElementById('save-confirm').style.display = 'block';
+    setTimeout(() => document.getElementById('save-confirm').style.display = 'none', 3000);
+  }
+
+  async function syncToServer() {
+    const statusEl = document.getElementById('sync-status');
+    statusEl.textContent = 'Syncing…';
+    try {
+      const res = await fetch(`${API}/interests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: 1, interests: selected })
+      });
+      const data = await res.json();
+      statusEl.textContent = `✅ Synced ${selected.length} interests to Postgres.`;
+    } catch (_) {
+      statusEl.textContent = '⚠️ Could not reach server — interests saved locally only.';
+    }
+  }
+
+  renderGrid();
+</script>
+
+</body>
+</html>
