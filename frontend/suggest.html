@@ -4,132 +4,232 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Get Suggestion — Doomless</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
+    <style>
+      /* LOCKED-IN FLOW STYLES */
+      #timer-section {
+        text-align: center;
+        padding: 2rem 1rem;
+      }
+      .timer-ring {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 1.5rem;
+      }
+      .timer-ring svg {
+        transform: rotate(-90deg);
+      }
+      .timer-ring circle {
+        fill: none;
+        stroke-width: 8;
+      }
+      .timer-ring .bg { stroke: rgba(255,255,255,0.08); }
+      .timer-ring .progress {
+        stroke: #a78bfa;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1s linear;
+      }
+      .timer-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2.2rem;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        color: #fff;
+      }
+      .locked-activity {
+        background: rgba(167,139,250,0.1);
+        border: 1px solid rgba(167,139,250,0.3);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.05rem;
+        line-height: 1.6;
+        color: #e9d5ff;
+      }
+      .locked-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: #a78bfa;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+      }
+      .commitment-msg {
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.4);
+        margin-bottom: 1.5rem;
+        font-style: italic;
+      }
+      .btn-done {
+        background: linear-gradient(135deg, #7c3aed, #a78bfa);
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        margin-bottom: 0.75rem;
+        transition: opacity 0.2s;
+      }
+      .btn-done:hover { opacity: 0.9; }
+      .btn-done:disabled { opacity: 0.4; cursor: not-allowed; }
+      .btn-skip {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.15);
+        color: rgba(255,255,255,0.35);
+        padding: 0.6rem 1.5rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.2s;
+      }
+      .btn-skip:hover { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.3); }
+      #done-section { display: none; text-align: center; padding: 2rem 1rem; }
+      .done-emoji { font-size: 4rem; margin-bottom: 1rem; }
+      .done-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+      .done-sub { color: rgba(255,255,255,0.5); margin-bottom: 1.5rem; }
+      #loading-section { display: none; text-align: center; padding: 3rem 1rem; }
+      .spinner {
+        width: 48px; height: 48px;
+        border: 3px solid rgba(167,139,250,0.2);
+        border-top-color: #a78bfa;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 1rem;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .surprise-badge {
+        display: inline-block;
+        background: rgba(251,191,36,0.15);
+        border: 1px solid rgba(251,191,36,0.3);
+        color: #fbbf24;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        margin-bottom: 1rem;
+      }
+    </style>
   </head>
   <body>
-    <header>
-      <a href="index.html" class="logo">Doomless</a>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="suggest.html" class="active">Suggest</a>
-        <a href="interests.html">Interests</a>
-        <a href="history.html">History</a>
-      </nav>
-    </header>
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
 
-    <main>
-      <!-- SURPRISE MODE banner -->
-      <div
-        id="surprise-banner"
-        style="display: none"
-        class="alert alert-success"
-        style="margin-bottom: 1rem"
-      >
-        ✨ <strong>Surprise mode</strong> — Gemini picks something unexpected,
-        no filters.
-      </div>
+    <div class="app-wrapper">
+      <header>
+        <a href="index.html" class="logo">Doomless</a>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="suggest.html" class="active">Suggest</a>
+          <a href="interests.html">Interests</a>
+          <a href="history.html">History</a>
+        </nav>
+      </header>
 
-      <!-- SUGGEST FORM -->
-      <div class="card" id="suggest-card">
-        <div class="card-title">⚡ Get an Activity</div>
+      <main>
 
-        <form
-          id="suggest-form"
-          action="http://localhost:8080/suggest"
-          method="POST"
-        >
-          <input type="hidden" name="user_id" value="1" />
-          <input
-            type="hidden"
-            id="surprise-flag"
-            name="surprise"
-            value="false"
-          />
+        <!-- STEP 1: PICK TIME -->
+        <div class="card" id="form-card">
+          <div class="card-title">⚡ Get Your Activity</div>
 
-          <!-- Time pills -->
+          <div id="surprise-badge-wrap" style="display:none">
+            <span class="surprise-badge">✨ Surprise Mode — No filters</span>
+          </div>
+
           <div class="field">
             <label class="field-label">How much time do you have?</label>
             <div class="pill-row">
-              <button type="button" class="pill" onclick="pickTime(this, 15)">
-                15 min
-              </button>
-              <button type="button" class="pill" onclick="pickTime(this, 30)">
-                30 min
-              </button>
-              <button type="button" class="pill" onclick="pickTime(this, 60)">
-                1 hour
-              </button>
-              <button type="button" class="pill" onclick="pickTime(this, 90)">
-                90 min
-              </button>
-              <button type="button" class="pill" onclick="pickTime(this, 120)">
-                2 hours
-              </button>
+              <button type="button" class="pill" onclick="pickTime(this, 15)">15 min</button>
+              <button type="button" class="pill" onclick="pickTime(this, 30)">30 min</button>
+              <button type="button" class="pill" onclick="pickTime(this, 60)">1 hour</button>
+              <button type="button" class="pill" onclick="pickTime(this, 90)">90 min</button>
+              <button type="button" class="pill" onclick="pickTime(this, 120)">2 hours</button>
             </div>
-            <input
-              type="number"
-              id="time-val"
-              name="time"
-              placeholder="Or type minutes…"
-              min="5"
-              max="480"
-            />
+            <input type="number" id="time-val" placeholder="Or type minutes…" min="5" max="480" />
           </div>
 
-          <!-- Interests (hidden in surprise mode) -->
           <div class="field" id="interests-section">
             <label class="field-label">Your Interests</label>
-            <div class="interests-grid" id="interests-grid">
-              <!-- Populated by JS from localStorage or defaults -->
-            </div>
+            <div class="interests-grid" id="interests-grid"></div>
           </div>
 
-          <button type="submit" class="btn btn-primary" id="submit-btn">
-            Get Suggestion →
+          <button class="btn btn-primary" id="submit-btn" onclick="getSuggestion()">
+            Commit to an Activity →
           </button>
-          <a
-            href="suggest.html?surprise=1"
-            class="btn btn-surprise"
-            id="surprise-btn"
-            >✨ Surprise Me Instead</a
-          >
-        </form>
-      </div>
-
-      <!-- RESULT CARD (shown after submit) -->
-      <div class="card" id="result-card" style="display: none">
-        <div class="card-title">💡 Your Suggestion</div>
-
-        <div class="suggestion-output" id="suggestion-text">Thinking…</div>
-
-        <!-- Log it form -->
-        <form id="log-form" action="http://localhost:8080/log" method="POST">
-          <input type="hidden" name="user_id" value="1" />
-          <input type="hidden" name="suggestion" id="log-suggestion" value="" />
-          <input type="hidden" name="time" id="log-time" value="" />
-          <input type="hidden" name="interests" id="log-interests" value="" />
-
-          <button type="submit" class="btn btn-success">
-            ✓ Done — Log this activity
-          </button>
-          <button type="button" class="btn btn-outline" onclick="retryFetch()">
-            ↺ Try another
-          </button>
-        </form>
-
-        <div
-          id="log-confirm"
-          class="alert alert-success"
-          style="display: none; margin-top: 0.75rem"
-        >
-          🎉 Logged! Check your
-          <a href="history.html" style="color: var(--success)">history</a>.
+          <div style="text-align:center; margin-top: 0.75rem">
+            <a href="suggest.html?surprise=1" style="color: rgba(255,255,255,0.4); font-size:0.85rem; text-decoration:none;">
+              ✨ Surprise me instead
+            </a>
+          </div>
         </div>
-      </div>
-    </main>
+
+        <!-- STEP 2: LOADING -->
+        <div id="loading-section">
+          <div class="spinner"></div>
+          <p style="color: rgba(255,255,255,0.5);">Finding your activity…</p>
+        </div>
+
+        <!-- STEP 3: LOCKED IN + TIMER -->
+        <div class="card" id="locked-card" style="display:none">
+          <div id="timer-section">
+            <div class="locked-label">🔒 You're committed to this</div>
+            <div class="locked-activity" id="suggestion-text"></div>
+            <p class="commitment-msg">No skipping. No scrolling. Just do it.</p>
+
+            <div class="timer-ring">
+              <svg width="200" height="200" viewBox="0 0 200 200">
+                <circle class="bg" cx="100" cy="100" r="88"/>
+                <circle class="progress" id="timer-circle" cx="100" cy="100" r="88"
+                  stroke-dasharray="553"
+                  stroke-dashoffset="0"/>
+              </svg>
+              <div class="timer-text" id="timer-display">--:--</div>
+            </div>
+
+            <button class="btn-done" id="done-btn" onclick="markDone()">
+              ✓ I Did It!
+            </button>
+            <button class="btn-skip" onclick="confirmSkip()">
+              I couldn't do it this time
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 4: DONE -->
+        <div class="card" id="done-section">
+          <div class="done-emoji">🎉</div>
+          <div class="done-title">You did it!</div>
+          <div class="done-sub" id="done-sub">Activity logged successfully.</div>
+          <a href="suggest.html" class="btn btn-primary" style="display:block; text-align:center; text-decoration:none; margin-bottom:0.75rem;">
+            Get Another Activity
+          </a>
+          <a href="history.html" class="btn btn-outline" style="display:block; text-align:center; text-decoration:none;">
+            View My History
+          </a>
+        </div>
+
+      </main>
+    </div>
 
     <script>
       const API = "http://localhost:8080";
+      const isSurprise = new URLSearchParams(location.search).get("surprise") === "1";
+
+      let selectedTime = 0;
+      let timerInterval = null;
+      let timerTotal = 0;
+      let timerLeft = 0;
+      let currentSuggestion = "";
+
       const DEFAULT_INTERESTS = [
         { emoji: "🏃", label: "Running" },
         { emoji: "🎸", label: "Guitar" },
@@ -141,136 +241,119 @@
         { emoji: "🎮", label: "Gaming" },
       ];
 
-      // Detect surprise mode
-      const isSurprise =
-        new URLSearchParams(location.search).get("surprise") === "1";
+      // Init
       if (isSurprise) {
-        document.getElementById("surprise-banner").style.display = "block";
+        document.getElementById("surprise-badge-wrap").style.display = "block";
         document.getElementById("interests-section").style.display = "none";
-        document.getElementById("surprise-flag").value = "true";
-        document.getElementById("submit-btn").textContent = "✨ Surprise Me →";
-        document.getElementById("surprise-btn").style.display = "none";
       }
 
-      // Build interests grid
       function buildInterests() {
-        const saved = JSON.parse(
-          localStorage.getItem("doomless_interests") || "[]",
-        );
+        const saved = JSON.parse(localStorage.getItem("doomless_interests") || "[]");
         const list = saved.length ? saved : DEFAULT_INTERESTS;
-        const grid = document.getElementById("interests-grid");
-        grid.innerHTML = list
-          .map(
-            (i) => `
-      <label class="interest-item" onclick="this.classList.toggle('checked')">
-        <input type="checkbox" name="interests" value="${i.label}"> ${i.emoji} ${i.label}
-      </label>
-    `,
-          )
-          .join("");
+        document.getElementById("interests-grid").innerHTML = list.map(i => `
+          <label class="interest-item" onclick="this.classList.toggle('checked')">
+            <input type="checkbox" name="interests" value="${i.label}"> ${i.emoji} ${i.label}
+          </label>
+        `).join("");
       }
       buildInterests();
 
-      // Time pill picker
       function pickTime(btn, val) {
-        document
-          .querySelectorAll(".pill")
-          .forEach((p) => p.classList.remove("active"));
+        document.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
         btn.classList.add("active");
+        selectedTime = val;
         document.getElementById("time-val").value = val;
       }
 
-      // Form submit — fetch instead of full POST so we can show result inline
-      document
-        .getElementById("suggest-form")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
+      async function getSuggestion() {
+        const timeInput = document.getElementById("time-val").value;
+        if (!timeInput) { alert("Please pick or enter a time first."); return; }
+        selectedTime = parseInt(timeInput);
 
-          const time = document.getElementById("time-val").value;
-          if (!time) {
-            alert("Please pick or enter a time first.");
-            return;
-          }
+        const checked = [...document.querySelectorAll('input[name="interests"]:checked')].map(c => c.value);
 
-          const checked = [
-            ...document.querySelectorAll('input[name="interests"]:checked'),
-          ].map((c) => c.value);
-          const interests = checked.join(",");
-          const surprise =
-            document.getElementById("surprise-flag").value === "true";
+        // Show loading
+        document.getElementById("form-card").style.display = "none";
+        document.getElementById("loading-section").style.display = "block";
 
-          document.getElementById("submit-btn").textContent =
-            "Getting suggestion…";
-          document.getElementById("submit-btn").disabled = true;
-
-          // Store for log form
-          document.getElementById("log-time").value = time;
-          document.getElementById("log-interests").value = interests;
-
-          const endpoint = surprise ? `${API}/surprise` : `${API}/suggest`;
-          const payload = {
-            user_id: 1,
-            time: parseInt(time),
-            interests,
-            surprise,
-          };
-
-          try {
-            const res = await fetch(endpoint, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-            });
-            const data = await res.json();
-
-            const text =
-              data.suggestion?.suggestion ||
-              data.suggestion ||
-              "No suggestion returned.";
-            document.getElementById("suggestion-text").textContent = text;
-            document.getElementById("log-suggestion").value = text;
-            document.getElementById("result-card").style.display = "block";
-            document
-              .getElementById("result-card")
-              .scrollIntoView({ behavior: "smooth" });
-          } catch (err) {
-            document.getElementById("suggestion-text").textContent =
-              "Could not reach server. Is the Awk server running on port 8080?";
-            document.getElementById("result-card").style.display = "block";
-          }
-
-          document.getElementById("submit-btn").textContent =
-            "Get Suggestion →";
-          document.getElementById("submit-btn").disabled = false;
+        const body = new URLSearchParams({
+          user_id: 1,
+          time: selectedTime,
+          surprise: isSurprise ? "1" : "0"
         });
+        if (!isSurprise) checked.forEach(i => body.append("interests", i));
 
-      // Log form — fetch so we can confirm inline
-      document
-        .getElementById("log-form")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const payload = {
-            user_id: 1,
-            suggestion: document.getElementById("log-suggestion").value,
-            time: parseInt(document.getElementById("log-time").value),
-            interests: document.getElementById("log-interests").value,
-          };
-          try {
-            await fetch(`${API}/log`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-            });
-          } catch (_) {}
-          document.getElementById("log-confirm").style.display = "block";
-          document.getElementById("log-form").style.display = "none";
-        });
+        try {
+          const res = await fetch(`${API}/suggest`, { method: "POST", body });
+          const data = await res.json();
+          currentSuggestion = data.suggestion || "Take a short walk outside.";
+        } catch(e) {
+          currentSuggestion = "Take a short walk outside and breathe some fresh air.";
+        }
 
-      function retryFetch() {
-        document.getElementById("result-card").style.display = "none";
-        document
-          .getElementById("suggest-form")
-          .dispatchEvent(new Event("submit"));
+        // Show locked card
+        document.getElementById("loading-section").style.display = "none";
+        document.getElementById("suggestion-text").textContent = currentSuggestion;
+        document.getElementById("locked-card").style.display = "block";
+
+        // Start timer
+        startTimer(selectedTime * 60);
+      }
+
+      function startTimer(seconds) {
+        timerTotal = seconds;
+        timerLeft = seconds;
+        const circle = document.getElementById("timer-circle");
+        const circumference = 553;
+
+        function tick() {
+          const mins = Math.floor(timerLeft / 60).toString().padStart(2, "0");
+          const secs = (timerLeft % 60).toString().padStart(2, "0");
+          document.getElementById("timer-display").textContent = `${mins}:${secs}`;
+
+          const progress = timerLeft / timerTotal;
+          circle.style.strokeDashoffset = circumference * (1 - progress);
+
+          if (timerLeft <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById("timer-display").textContent = "Done!";
+            document.getElementById("done-btn").textContent = "✓ Log It!";
+          } else {
+            timerLeft--;
+          }
+        }
+
+        tick();
+        timerInterval = setInterval(tick, 1000);
+      }
+
+      async function markDone() {
+        clearInterval(timerInterval);
+        const timeSpent = timerTotal - timerLeft;
+
+        try {
+          await fetch(`${API}/log`, {
+            method: "POST",
+            body: new URLSearchParams({
+              user_id: 1,
+              activity: currentSuggestion,
+              time_spent: Math.round(timeSpent / 60) || selectedTime
+            })
+          });
+        } catch(e) {}
+
+        document.getElementById("locked-card").style.display = "none";
+        document.getElementById("done-section").style.display = "block";
+        document.getElementById("done-sub").textContent =
+          `You spent ${Math.round((timerTotal - timerLeft)/60) || selectedTime} minutes on something real.`;
+      }
+
+      function confirmSkip() {
+        if (confirm("You're giving up? That's okay this time. It will be logged as skipped.")) {
+          clearInterval(timerInterval);
+          document.getElementById("locked-card").style.display = "none";
+          document.getElementById("form-card").style.display = "block";
+        }
       }
     </script>
   </body>
