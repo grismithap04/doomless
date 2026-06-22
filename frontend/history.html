@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History — Doomless</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">Doomless</a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="suggest.html">Suggest</a>
+    <a href="interests.html">Interests</a>
+    <a href="history.html" class="active">History</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- Stats bar -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1.25rem">
+    <div class="card" style="text-align:center;padding:1.1rem 0.5rem">
+      <div style="font-size:1.8rem;font-weight:800;color:var(--accent)" id="stat-total">—</div>
+      <div style="font-size:0.78rem;color:var(--muted);margin-top:0.2rem">Total Done</div>
+    </div>
+    <div class="card" style="text-align:center;padding:1.1rem 0.5rem">
+      <div style="font-size:1.8rem;font-weight:800;color:var(--accent2)" id="stat-time">—</div>
+      <div style="font-size:0.78rem;color:var(--muted);margin-top:0.2rem">Mins Off Scroll</div>
+    </div>
+    <div class="card" style="text-align:center;padding:1.1rem 0.5rem">
+      <div style="font-size:1.8rem;font-weight:800;color:var(--success)" id="stat-today">—</div>
+      <div style="font-size:0.78rem;color:var(--muted);margin-top:0.2rem">Today</div>
+    </div>
+  </div>
+
+  <!-- History list -->
+  <div class="card">
+    <div class="card-title" style="justify-content:space-between">
+      <span>📋 Activity Log</span>
+      <span style="font-size:0.8rem;font-weight:400;color:var(--muted)">
+        <span class="dot"></span>Live from Postgres
+      </span>
+    </div>
+
+    <div id="history-list">
+      <div class="empty-state">
+        <div class="empty-icon">⏳</div>
+        <p>Loading history…</p>
+      </div>
+    </div>
+
+    <div id="load-error" style="display:none" class="alert alert-error">
+      Could not reach server. Make sure the Awk server is running on port 8080.
+    </div>
+  </div>
+
+  <!-- Google Sheets link -->
+  <div class="card" style="padding:1.25rem">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-weight:600;margin-bottom:0.25rem">📊 Google Sheets Backup</div>
+        <div style="font-size:0.85rem;color:var(--muted)">All activities also sync here</div>
+      </div>
+      <a href="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID"
+         target="_blank"
+         class="btn btn-outline btn-sm"
+         style="white-space:nowrap">
+        Open Sheet →
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const API = 'http://localhost:8080';
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    const now = new Date();
+    const isToday = d.toDateString() === now.toDateString();
+    if (isToday) return 'Today ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' · ' +
+           d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  async function loadHistory() {
+    try {
+      const res = await fetch(`${API}/history?user_id=1`);
+      const data = await res.json();
+      const items = data.history || [];
+
+      // Stats
+      const totalTime = items.reduce((s, i) => s + (i.time_available || 0), 0);
+      const todayItems = items.filter(i => new Date(i.logged_at).toDateString() === new Date().toDateString());
+      document.getElementById('stat-total').textContent = items.length;
+      document.getElementById('stat-time').textContent = totalTime;
+      document.getElementById('stat-today').textContent = todayItems.length;
+
+      // List
+      const list = document.getElementById('history-list');
+      if (items.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🌱</div>
+            <p>No activities yet.<br>
+               <a href="suggest.html" style="color:var(--accent)">Get your first suggestion →</a>
+            </p>
+          </div>`;
+        return;
+      }
+
+      list.innerHTML = `<div class="log-list">` + items.map(item => `
+        <div class="log-item">
+          <div class="log-text">${escapeHtml(item.suggestion)}</div>
+          <div class="log-meta">
+            <span class="tag time">⏱ ${item.time_available} min</span>
+            ${(item.interests_used || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}
+            <span class="meta-text">${formatDate(item.logged_at)}</span>
+          </div>
+        </div>
+      `).join('') + `</div>`;
+
+    } catch (err) {
+      document.getElementById('history-list').innerHTML = '';
+      document.getElementById('load-error').style.display = 'block';
+
+      // Fallback: show stats as 0
+      ['stat-total','stat-time','stat-today'].forEach(id => {
+        document.getElementById(id).textContent = '0';
+      });
+    }
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  loadHistory();
+</script>
+
+</body>
+</html>
