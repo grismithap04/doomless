@@ -4,9 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Doomless — Beat the Scroll</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <!-- Extra floating orbs for depth -->
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+
     <div class="app-wrapper">
       <header>
         <a href="index.html" class="logo">Doomless</a>
@@ -19,18 +30,38 @@
       </header>
 
       <main>
-        <!-- HERO SECTION -->
+        <!-- HERO SECTION with Phone Mockup -->
         <div class="hero">
-          <h1>Doomless</h1>
-          <p class="tagline">
-            You have free time. Use it well.<br />
-            Stop doomscrolling. Start doing.
-          </p>
+          <div class="hero-content">
+            <h1>Doomless</h1>
+            <p class="tagline">
+              <i>✦</i> You have free time. Use it well.<br />
+              Stop doomscrolling. Start doing. <i>✦</i>
+            </p>
+          </div>
+          <div class="phone-ui">
+            <div class="bubble bubble1">
+              🏃
+              <span>Running</span>
+            </div>
+            <div class="bubble bubble2">
+              🎸
+              <span>Music</span>
+            </div>
+            <div class="bubble bubble3">
+              🍞
+              <span>Baking</span>
+            </div>
+            <div class="bubble bubble4">
+              📚
+              <span>Reading</span>
+            </div>
+          </div>
         </div>
 
         <!-- QUICK ACTIONS -->
         <div class="card">
-          <div class="card-title">⚡ Quick Actions</div>
+          <div class="card-title"><i>⚡</i> Quick Actions</div>
           <div class="quick-actions">
             <a href="suggest.html" class="btn btn-primary">Get My Activity →</a>
             <a href="suggest.html?surprise=1" class="btn btn-surprise"
@@ -44,7 +75,7 @@
 
         <!-- HOW IT WORKS -->
         <div class="card">
-          <div class="card-title">📊 How It Works</div>
+          <div class="card-title"><i>📊</i> How It Works</div>
           <div class="steps">
             <div class="step">
               <div class="step-number">1</div>
@@ -81,7 +112,7 @@
 
         <!-- STATS PREVIEW -->
         <div class="card">
-          <div class="card-title">📈 Your Progress</div>
+          <div class="card-title"><i>📈</i> Your Progress</div>
           <div class="stats-grid">
             <div class="stat-item">
               <div class="stat-number" id="stat-total">—</div>
@@ -111,7 +142,13 @@
         <div class="card" style="padding: 1.25rem">
           <div class="flex-between">
             <div>
-              <div style="font-weight: 600; margin-bottom: 0.25rem">
+              <div
+                style="
+                  font-weight: 600;
+                  margin-bottom: 0.25rem;
+                  color: var(--text);
+                "
+              >
                 📊 Google Sheets Backup
               </div>
               <div style="font-size: 0.85rem; color: var(--muted)">
@@ -122,7 +159,7 @@
               href="#"
               id="sheet-link"
               target="_blank"
-              class="btn btn-outline btn-sm"
+              class="btn btn-sm btn-outline"
               style="white-space: nowrap; display: inline-block"
             >
               Open Sheet →
