@@ -76,11 +76,8 @@ def suggest():
     if surprise == '1':
         interests = ''
     else:
-        result = subprocess.run(
-            ['sudo', '-u', 'postgres', 'psql', '-d', 'doomless', '-t', '-c',
-             f'SELECT interest FROM interests WHERE user_id={user_id};'],
-            capture_output=True, text=True)
-        interests = ', '.join(l.strip() for l in result.stdout.splitlines() if l.strip())
+        interests_list = request.form.getlist('interests')
+    interests = ', '.join(interests_list) if interests_list else ''
 
     suggestion = call_gemini(time_val, interests)
     return jsonify({"suggestion": suggestion})
@@ -96,22 +93,48 @@ def log():
     user_id    = request.form.get('user_id', '1')
     activity   = request.form.get('activity', '').replace("'", "''")
     time_spent = request.form.get('time_spent', '0')
+
+    # Save to Postgres
     subprocess.run(
         ['sudo', '-u', 'postgres', 'psql', '-d', 'doomless', '-c',
          f"INSERT INTO activity_log (user_id, activity, time_spent) VALUES ({user_id}, '{activity}', {time_spent});"],
         capture_output=True)
+
+    # Save to Google Sheets
+    try:
+        sheets_url = os.environ.get('SHEETS_URL', '')
+        if sheets_url:
+            from datetime import datetime
+            payload = json.dumps({
+                "user_id": user_id,
+                "activity": activity,
+                "time_spent": time_spent,
+                "logged_at": datetime.now().isoformat()
+            }).encode()
+            req = urllib.request.Request(
+                sheets_url,
+                data=payload,
+                headers={
+                    "Content-Type": "application/json",
+                    "User-Agent": "curl/7.68.0"
+                }
+            )
+            urllib.request.urlopen(req)
+            print("SHEETS: logged successfully")
+    except Exception as e:
+        print("SHEETS ERROR:", e)
+
     return jsonify({"status": "ok"})
 
 def call_gemini(time_val, interests):
     api_key = os.environ.get('GROQ_API_KEY', '')
     if interests:
-        prompt = f"Suggest one specific activity for someone who has {time_val} minutes free. Their interests are: {interests}. Give only the activity name and a one-line description. Be specific and creative. No lists, no markdown."
+        prompt = f"The user has exactly {time_val} minutes free. They want to do something related to: {interests}. Suggest ONE specific activity directly related to {interests}. Start with the interest topic directly. No shadow puppets, no unrelated activities. Give only the activity name and one sentence description. No lists, no markdown, no asterisks."
     else:
-        prompt = f"Suggest one surprising, creative activity for someone who has {time_val} minutes free. Something completely unexpected. Give only the activity name and a one-line description. No lists, no markdown."
+        prompt = f"Suggest one surprising creative activity for someone with {time_val} minutes free. Give only the activity name and one sentence. No lists, no markdown."
 
     payload = json.dumps({
         "model": "llama-3.1-8b-instant",
-        "max_tokens": 100,
         "messages": [{"role": "user", "content": prompt}]
     }).encode()
 
@@ -121,16 +144,13 @@ def call_gemini(time_val, interests):
         headers={
             "Content-Type": "application/json",
             "Authorization": f"Bearer {api_key}",
-            "User-Agent": "Mozilla/5.0"
+            "User-Agent": "curl/7.68.0"
         }
     )
     try:
         with urllib.request.urlopen(req) as r:
             data = json.load(r)
         return data['choices'][0]['message']['content']
-    except urllib.error.HTTPError as e:
-        print("GROQ ERROR:", e.code, e.read().decode())
-        return "Take a 5-minute walk and breathe some fresh air."
     except Exception as e:
         print("GROQ ERROR:", e)
         return "Take a 5-minute walk and breathe some fresh air."

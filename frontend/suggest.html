@@ -6,7 +6,10 @@
     <title>Get Suggestion — Doomless</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
     <style>
       /* LOCKED-IN FLOW STYLES */
@@ -27,7 +30,9 @@
         fill: none;
         stroke-width: 8;
       }
-      .timer-ring .bg { stroke: rgba(255,255,255,0.08); }
+      .timer-ring .bg {
+        stroke: rgba(255, 255, 255, 0.08);
+      }
       .timer-ring .progress {
         stroke: #a78bfa;
         stroke-linecap: round;
@@ -40,12 +45,12 @@
         transform: translate(-50%, -50%);
         font-size: 2.2rem;
         font-weight: 700;
-        font-family: 'Inter', sans-serif;
+        font-family: "Inter", sans-serif;
         color: #fff;
       }
       .locked-activity {
-        background: rgba(167,139,250,0.1);
-        border: 1px solid rgba(167,139,250,0.3);
+        background: rgba(167, 139, 250, 0.1);
+        border: 1px solid rgba(167, 139, 250, 0.3);
         border-radius: 16px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
@@ -63,7 +68,7 @@
       }
       .commitment-msg {
         font-size: 0.9rem;
-        color: rgba(255,255,255,0.4);
+        color: rgba(255, 255, 255, 0.4);
         margin-bottom: 1.5rem;
         font-style: italic;
       }
@@ -80,12 +85,17 @@
         margin-bottom: 0.75rem;
         transition: opacity 0.2s;
       }
-      .btn-done:hover { opacity: 0.9; }
-      .btn-done:disabled { opacity: 0.4; cursor: not-allowed; }
+      .btn-done:hover {
+        opacity: 0.9;
+      }
+      .btn-done:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
       .btn-skip {
         background: transparent;
-        border: 1px solid rgba(255,255,255,0.15);
-        color: rgba(255,255,255,0.35);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.35);
         padding: 0.6rem 1.5rem;
         border-radius: 50px;
         font-size: 0.85rem;
@@ -93,30 +103,400 @@
         width: 100%;
         transition: all 0.2s;
       }
-      .btn-skip:hover { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.3); }
-      #done-section { display: none; text-align: center; padding: 2rem 1rem; }
-      .done-emoji { font-size: 4rem; margin-bottom: 1rem; }
-      .done-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
-      .done-sub { color: rgba(255,255,255,0.5); margin-bottom: 1.5rem; }
-      #loading-section { display: none; text-align: center; padding: 3rem 1rem; }
+      .btn-skip:hover {
+        color: rgba(255, 255, 255, 0.6);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      #done-section {
+        display: none;
+        text-align: center;
+        padding: 2rem 1rem;
+      }
+      .done-emoji {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+      }
+      .done-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .done-sub {
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 1.5rem;
+      }
+      #loading-section {
+        display: none;
+        text-align: center;
+        padding: 3rem 1rem;
+      }
       .spinner {
-        width: 48px; height: 48px;
-        border: 3px solid rgba(167,139,250,0.2);
+        width: 48px;
+        height: 48px;
+        border: 3px solid rgba(167, 139, 250, 0.2);
         border-top-color: #a78bfa;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
         margin: 0 auto 1rem;
       }
-      @keyframes spin { to { transform: rotate(360deg); } }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
       .surprise-badge {
         display: inline-block;
-        background: rgba(251,191,36,0.15);
-        border: 1px solid rgba(251,191,36,0.3);
+        background: rgba(251, 191, 36, 0.15);
+        border: 1px solid rgba(251, 191, 36, 0.3);
         color: #fbbf24;
         font-size: 0.8rem;
         padding: 0.25rem 0.75rem;
         border-radius: 50px;
         margin-bottom: 1rem;
+      }
+
+      /* ============================================
+         INTEREST BUTTONS - IMPROVED VERSION
+         Combines best of both codes
+         ============================================ */
+      .interests-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 10px;
+      }
+
+      .interest-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        border-radius: 50px;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.6);
+        user-select: none;
+        font-family: "Inter", sans-serif;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition:
+          background 0.35s ease,
+          border-color 0.35s ease,
+          box-shadow 0.35s ease,
+          color 0.35s ease,
+          transform 0.35s ease;
+        position: relative;
+      }
+
+      .interest-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        transform: translateY(-2px);
+      }
+
+      /* ACTIVE STATE - SAME AS TIME BUTTONS */
+      .interest-btn.active {
+        background: rgba(167, 139, 250, 0.3) !important;
+        border-color: #a78bfa !important;
+        color: #fff !important;
+        box-shadow:
+          0 0 12px rgba(167, 139, 250, 0.6),
+          0 0 24px rgba(167, 139, 250, 0.45),
+          0 0 40px rgba(167, 139, 250, 0.25) !important;
+        transform: scale(1.05) !important;
+        animation: interestGlow 2s ease-in-out infinite;
+      }
+
+      .interest-btn.active:hover {
+        background: rgba(167, 139, 250, 0.3) !important;
+        border-color: #a78bfa !important;
+        color: #fff !important;
+        box-shadow:
+          0 0 12px rgba(167, 139, 250, 0.6),
+          0 0 24px rgba(167, 139, 250, 0.45),
+          0 0 40px rgba(167, 139, 250, 0.25) !important;
+        transform: scale(1.05) !important;
+      }
+
+      /* Glow Pulse Animation */
+      @keyframes interestGlow {
+        0%,
+        100% {
+          box-shadow:
+            0 0 12px rgba(167, 139, 250, 0.6),
+            0 0 24px rgba(167, 139, 250, 0.45),
+            0 0 40px rgba(167, 139, 250, 0.25);
+        }
+        50% {
+          box-shadow:
+            0 0 20px rgba(167, 139, 250, 0.9),
+            0 0 40px rgba(167, 139, 250, 0.65),
+            0 0 60px rgba(167, 139, 250, 0.35);
+        }
+      }
+
+      .interest-btn .interest-emoji {
+        font-size: 1.1rem;
+        transition: transform 0.35s ease;
+      }
+
+      .interest-btn.active .interest-emoji {
+        transform: scale(1.2) rotate(5deg);
+      }
+
+      .interest-btn .interest-label {
+        font-weight: 500;
+        transition: all 0.35s ease;
+      }
+
+      .interest-btn.active .interest-label {
+        font-weight: 600;
+        text-shadow: 0 0 20px rgba(167, 139, 250, 0.7);
+      }
+
+      /* Sparkle on active */
+      .interest-btn.active::after {
+        content: "✨";
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        font-size: 0.9rem;
+        animation: sparkle 2s ease infinite;
+      }
+
+      @keyframes sparkle {
+        0%,
+        100% {
+          transform: scale(1) rotate(0deg);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.5) rotate(30deg);
+          opacity: 0.8;
+        }
+      }
+
+      /* ============================================
+         PILL BUTTONS - TIME SELECTION
+         ============================================ */
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .pill {
+        padding: 8px 16px;
+        border-radius: 50px;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+        font-family: "Inter", sans-serif;
+        font-weight: 500;
+      }
+      .pill:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        transform: translateY(-2px);
+      }
+      .pill.active {
+        background: rgba(167, 139, 250, 0.3) !important;
+        border-color: #a78bfa !important;
+        color: #fff !important;
+        box-shadow: 0 0 30px rgba(167, 139, 250, 0.3) !important;
+        transform: scale(1.05) !important;
+      }
+      .pill.active:hover {
+        background: rgba(167, 139, 250, 0.3) !important;
+        border-color: #a78bfa !important;
+        color: #fff !important;
+        box-shadow: 0 0 30px rgba(167, 139, 250, 0.3) !important;
+        transform: scale(1.05) !important;
+      }
+
+      /* Form styles */
+      .card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: #fff;
+        font-family: "Inter", sans-serif;
+      }
+      .field {
+        margin-bottom: 1.5rem;
+      }
+      .field-label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 8px;
+        font-family: "Inter", sans-serif;
+      }
+      #time-val {
+        width: 100%;
+        padding: 10px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        font-size: 1rem;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+        font-family: "Inter", sans-serif;
+      }
+      #time-val:focus {
+        outline: none;
+        border-color: #a78bfa;
+        box-shadow: 0 0 20px rgba(167, 139, 250, 0.2);
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #7c3aed, #a78bfa);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s ease;
+        font-family: "Inter", sans-serif;
+      }
+      .btn-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 30px rgba(167, 139, 250, 0.3);
+      }
+      .btn-primary:active {
+        transform: scale(0.98);
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.7);
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-size: 1rem;
+        cursor: pointer;
+        width: 100%;
+        text-align: center;
+        transition: all 0.3s ease;
+        font-family: "Inter", sans-serif;
+      }
+      .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.4);
+        color: #fff;
+        transform: translateY(-2px);
+      }
+
+      /* Header styles */
+      .app-wrapper {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        position: relative;
+        z-index: 1;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 0;
+        margin-bottom: 2rem;
+      }
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #fff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-family: "Inter", sans-serif;
+      }
+      .logo:hover {
+        text-shadow: 0 0 30px rgba(167, 139, 250, 0.3);
+      }
+      nav {
+        display: flex;
+        gap: 12px;
+      }
+      nav a {
+        color: rgba(255, 255, 255, 0.5);
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        font-family: "Inter", sans-serif;
+      }
+      nav a:hover {
+        color: rgba(255, 255, 255, 0.8);
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateY(-2px);
+      }
+      nav a.active {
+        color: #fff;
+        background: rgba(167, 139, 250, 0.2);
+        box-shadow: 0 0 20px rgba(167, 139, 250, 0.1);
+      }
+
+      /* Background orbs */
+      .orb-1,
+      .orb-2 {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(80px);
+        z-index: 0;
+      }
+      .orb-1 {
+        width: 400px;
+        height: 400px;
+        background: rgba(167, 139, 250, 0.15);
+        top: -100px;
+        right: -100px;
+        animation: float 8s ease-in-out infinite;
+      }
+      .orb-2 {
+        width: 300px;
+        height: 300px;
+        background: rgba(236, 72, 153, 0.1);
+        bottom: -50px;
+        left: -50px;
+        animation: float 10s ease-in-out infinite reverse;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(0, 0);
+        }
+        50% {
+          transform: translate(30px, -30px);
+        }
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: linear-gradient(
+          135deg,
+          #0a0a1a 0%,
+          #1a1a2e 50%,
+          #16213e 100%
+        );
+        font-family: "Inter", sans-serif;
+        color: #fff;
       }
     </style>
   </head>
@@ -136,25 +516,40 @@
       </header>
 
       <main>
-
         <!-- STEP 1: PICK TIME -->
         <div class="card" id="form-card">
           <div class="card-title">⚡ Get Your Activity</div>
 
-          <div id="surprise-badge-wrap" style="display:none">
+          <div id="surprise-badge-wrap" style="display: none">
             <span class="surprise-badge">✨ Surprise Mode — No filters</span>
           </div>
 
           <div class="field">
             <label class="field-label">How much time do you have?</label>
             <div class="pill-row">
-              <button type="button" class="pill" onclick="pickTime(this, 15)">15 min</button>
-              <button type="button" class="pill" onclick="pickTime(this, 30)">30 min</button>
-              <button type="button" class="pill" onclick="pickTime(this, 60)">1 hour</button>
-              <button type="button" class="pill" onclick="pickTime(this, 90)">90 min</button>
-              <button type="button" class="pill" onclick="pickTime(this, 120)">2 hours</button>
+              <button type="button" class="pill" onclick="pickTime(this, 15)">
+                15 min
+              </button>
+              <button type="button" class="pill" onclick="pickTime(this, 30)">
+                30 min
+              </button>
+              <button type="button" class="pill" onclick="pickTime(this, 60)">
+                1 hour
+              </button>
+              <button type="button" class="pill" onclick="pickTime(this, 90)">
+                90 min
+              </button>
+              <button type="button" class="pill" onclick="pickTime(this, 120)">
+                2 hours
+              </button>
             </div>
-            <input type="number" id="time-val" placeholder="Or type minutes…" min="5" max="480" />
+            <input
+              type="number"
+              id="time-val"
+              placeholder="Or type minutes…"
+              min="5"
+              max="480"
+            />
           </div>
 
           <div class="field" id="interests-section">
@@ -162,11 +557,20 @@
             <div class="interests-grid" id="interests-grid"></div>
           </div>
 
-          <button class="btn btn-primary" id="submit-btn" onclick="getSuggestion()">
+          <button class="btn-primary" id="submit-btn" onclick="getSuggestion()">
             Commit to an Activity →
           </button>
-          <div style="text-align:center; margin-top: 0.75rem">
-            <a href="suggest.html?surprise=1" style="color: rgba(255,255,255,0.4); font-size:0.85rem; text-decoration:none;">
+          <div style="text-align: center; margin-top: 0.75rem">
+            <a
+              href="suggest.html?surprise=1"
+              style="
+                color: rgba(255, 255, 255, 0.4);
+                font-size: 0.85rem;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                font-family: &quot;Inter&quot;, sans-serif;
+              "
+            >
               ✨ Surprise me instead
             </a>
           </div>
@@ -175,11 +579,18 @@
         <!-- STEP 2: LOADING -->
         <div id="loading-section">
           <div class="spinner"></div>
-          <p style="color: rgba(255,255,255,0.5);">Finding your activity…</p>
+          <p
+            style="
+              color: rgba(255, 255, 255, 0.5);
+              font-family: &quot;Inter&quot;, sans-serif;
+            "
+          >
+            Finding your activity…
+          </p>
         </div>
 
         <!-- STEP 3: LOCKED IN + TIMER -->
-        <div class="card" id="locked-card" style="display:none">
+        <div class="card" id="locked-card" style="display: none">
           <div id="timer-section">
             <div class="locked-label">🔒 You're committed to this</div>
             <div class="locked-activity" id="suggestion-text"></div>
@@ -187,10 +598,16 @@
 
             <div class="timer-ring">
               <svg width="200" height="200" viewBox="0 0 200 200">
-                <circle class="bg" cx="100" cy="100" r="88"/>
-                <circle class="progress" id="timer-circle" cx="100" cy="100" r="88"
+                <circle class="bg" cx="100" cy="100" r="88" />
+                <circle
+                  class="progress"
+                  id="timer-circle"
+                  cx="100"
+                  cy="100"
+                  r="88"
                   stroke-dasharray="553"
-                  stroke-dashoffset="0"/>
+                  stroke-dashoffset="0"
+                />
               </svg>
               <div class="timer-text" id="timer-display">--:--</div>
             </div>
@@ -208,21 +625,36 @@
         <div class="card" id="done-section">
           <div class="done-emoji">🎉</div>
           <div class="done-title">You did it!</div>
-          <div class="done-sub" id="done-sub">Activity logged successfully.</div>
-          <a href="suggest.html" class="btn btn-primary" style="display:block; text-align:center; text-decoration:none; margin-bottom:0.75rem;">
+          <div class="done-sub" id="done-sub">
+            Activity logged successfully.
+          </div>
+          <a
+            href="suggest.html"
+            class="btn-primary"
+            style="
+              display: block;
+              text-align: center;
+              text-decoration: none;
+              margin-bottom: 0.75rem;
+            "
+          >
             Get Another Activity
           </a>
-          <a href="history.html" class="btn btn-outline" style="display:block; text-align:center; text-decoration:none;">
+          <a
+            href="history.html"
+            class="btn-outline"
+            style="display: block; text-align: center; text-decoration: none"
+          >
             View My History
           </a>
         </div>
-
       </main>
     </div>
 
     <script>
       const API = "http://localhost:8080";
-      const isSurprise = new URLSearchParams(location.search).get("surprise") === "1";
+      const isSurprise =
+        new URLSearchParams(location.search).get("surprise") === "1";
 
       let selectedTime = 0;
       let timerInterval = null;
@@ -239,6 +671,136 @@
         { emoji: "🧘", label: "Meditation" },
         { emoji: "🍳", label: "Cooking" },
         { emoji: "🎮", label: "Gaming" },
+        { emoji: "🎵", label: "Music" },
+        { emoji: "📖", label: "Reading" },
+        { emoji: "🚶", label: "Walking" },
+        { emoji: "🏋️", label: "Exercise" },
+        { emoji: "🎨", label: "Painting" },
+        { emoji: "🧹", label: "Cleaning" },
+        { emoji: "🌱", label: "Gardening" },
+      ];
+
+      // COMPLETE ACTIVITY DATABASE
+      const ACTIVITY_DATABASE = {
+        Meditation: [
+          "🧘 Practice guided meditation for 10 minutes",
+          "🌿 Do a mindful breathing exercise",
+          "🧠 Try a body scan meditation",
+          "🌸 Practice loving-kindness meditation",
+          "🎵 Listen to calming meditation music",
+        ],
+        Running: [
+          "🏃 Go for a 15-minute run in the park",
+          "🏃‍♂️ Do interval training (sprint 1 min, walk 2 min)",
+          "🏃‍♀️ Try a slow, steady distance run",
+          "🌅 Go for an early morning jog",
+          "📱 Use a running app to track your distance",
+        ],
+        Guitar: [
+          "🎸 Practice basic chords (G, C, D, Em)",
+          "🎵 Learn a new song on guitar",
+          "🎶 Practice fingerpicking patterns",
+          "🎸 Try a barre chord exercise",
+          "🎵 Play along with your favorite song",
+        ],
+        Baking: [
+          "🍞 Bake a simple loaf of bread",
+          "🧁 Try making cupcakes or muffins",
+          "🍪 Bake chocolate chip cookies",
+          "🥧 Make a simple pie or tart",
+          "🎂 Attempt a basic cake recipe",
+        ],
+        "Sci-Fi Books": [
+          "📚 Read a chapter of your sci-fi book",
+          "🪐 Write a short sci-fi story",
+          "🌌 Watch a sci-fi short film",
+          "🚀 Research space exploration news",
+          "📖 Discuss sci-fi themes with a friend",
+        ],
+        Sketching: [
+          "✏️ Draw a still life of objects around you",
+          "🎨 Try gesture drawing for 15 minutes",
+          "✏️ Sketch a portrait from a photo",
+          "🌿 Draw a plant or flower",
+          "🏙️ Do a quick urban sketch of a building",
+        ],
+        Cooking: [
+          "🍳 Try a new recipe you've been wanting to make",
+          "🥗 Prepare a healthy meal prep session",
+          "🍝 Make pasta from scratch",
+          "🥘 Cook a one-pot meal",
+          "🍣 Try making sushi or a fusion dish",
+        ],
+        Gaming: [
+          "🎮 Play one level of your favorite game",
+          "🕹️ Try a short indie game",
+          "🎯 Beat a boss or challenge you've been stuck on",
+          "🎧 Listen to a gaming podcast",
+          "🗺️ Explore an open world game environment",
+        ],
+        Music: [
+          "🎵 Listen to a new album from start to finish",
+          "🎶 Create a playlist based on your mood",
+          "🎧 Discover new music on Spotify/YouTube",
+          "🎹 Try learning a song on piano/keyboard",
+          "🎤 Sing along to your favorite karaoke song",
+        ],
+        Reading: [
+          "📖 Read a chapter from any book you enjoy",
+          "📚 Write a short book review",
+          "📰 Read articles on topics that interest you",
+          "🎧 Listen to an audiobook or podcast",
+          "📝 Write a summary of what you just read",
+        ],
+        Walking: [
+          "🚶 Take a 15-minute walk outdoors",
+          "🌳 Walk in a park or nature trail",
+          "🏙️ Explore a new neighborhood or street",
+          "🚶‍♀️ Practice walking meditation",
+          "👟 Walk while listening to a podcast",
+        ],
+        Exercise: [
+          "🏋️ Do a 15-minute strength training session",
+          "🤸 Try a yoga flow or stretching routine",
+          "💪 Do push-ups, squats, and core exercises",
+          "🏋️‍♀️ Follow a home workout video",
+          "🧗 Try climbing stairs or a short hike",
+        ],
+        Painting: [
+          "🎨 Paint a landscape or scenery",
+          "🖼️ Try abstract painting for 20 minutes",
+          "🎭 Practice mixing colors and gradients",
+          "🎨 Paint something from your imagination",
+          "🖌️ Do a watercolor painting experiment",
+        ],
+        Cleaning: [
+          "🧹 Deep clean one room in your home",
+          "🗂️ Organize your closet or workspace",
+          "🧼 Clean and disinfect high-touch surfaces",
+          "🧺 Do a load of laundry and fold it",
+          "📋 Create a cleaning checklist for the week",
+        ],
+        Gardening: [
+          "🌱 Water and tend to your plants",
+          "🌻 Plant new seeds or seedlings",
+          "🌿 Prune and trim overgrown plants",
+          "🌺 Design a small herb garden",
+          "🌳 Learn about a new plant species",
+        ],
+      };
+
+      // General fallback activities
+      const GENERAL_ACTIVITIES = [
+        "🌿 Spend 15 minutes in nature and breathe deeply",
+        "📓 Write down three things you're grateful for",
+        "🧠 Try a brain training puzzle or app",
+        "🎵 Listen to music and let your mind wander",
+        "🤸 Do some light stretching to relax your body",
+        "📞 Call or message someone you care about",
+        "💭 Practice visualizing your goals for 10 minutes",
+        "📝 Write a to-do list for tomorrow",
+        "🎯 Set one small goal and work on it",
+        "🧘 Take 5 minutes to just breathe and relax",
       ];
 
       // Init
@@ -248,55 +810,124 @@
       }
 
       function buildInterests() {
-        const saved = JSON.parse(localStorage.getItem("doomless_interests") || "[]");
-        const list = saved.length ? saved : DEFAULT_INTERESTS;
-        document.getElementById("interests-grid").innerHTML = list.map(i => `
-          <label class="interest-item" onclick="this.classList.toggle('checked')">
-            <input type="checkbox" name="interests" value="${i.label}"> ${i.emoji} ${i.label}
-          </label>
-        `).join("");
+        const saved = localStorage.getItem("doomless_interests");
+        let list = [];
+
+        try {
+          list = saved ? JSON.parse(saved) : [];
+        } catch (e) {
+          list = [];
+        }
+
+        if (!list || list.length === 0) {
+          list = DEFAULT_INTERESTS;
+        }
+
+        const grid = document.getElementById("interests-grid");
+        grid.innerHTML = list
+          .map(
+            (i) => `
+          <button type="button" class="interest-btn" onclick="toggleInterest(this)" data-value="${i.label}">
+            <span class="interest-emoji">${i.emoji}</span>
+            <span class="interest-label">${i.label}</span>
+          </button>
+        `,
+          )
+          .join("");
       }
-      buildInterests();
+
+      function toggleInterest(element) {
+        element.classList.toggle("active");
+      }
 
       function pickTime(btn, val) {
-        document.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+        document
+          .querySelectorAll(".pill")
+          .forEach((p) => p.classList.remove("active"));
         btn.classList.add("active");
         selectedTime = val;
         document.getElementById("time-val").value = val;
       }
 
+      function getSelectedInterests() {
+        const activeButtons = document.querySelectorAll(".interest-btn.active");
+        return Array.from(activeButtons).map((btn) => btn.dataset.value);
+      }
+
+      function getMatchingActivity(interests) {
+        if (!interests || interests.length === 0) {
+          return GENERAL_ACTIVITIES[
+            Math.floor(Math.random() * GENERAL_ACTIVITIES.length)
+          ];
+        }
+
+        let matchedActivities = [];
+
+        interests.forEach((interest) => {
+          if (ACTIVITY_DATABASE[interest]) {
+            const activities = ACTIVITY_DATABASE[interest];
+            activities.forEach((activity) => {
+              matchedActivities.push(activity);
+              matchedActivities.push(activity);
+              matchedActivities.push(activity);
+            });
+          }
+        });
+
+        if (matchedActivities.length === 0) {
+          return GENERAL_ACTIVITIES[
+            Math.floor(Math.random() * GENERAL_ACTIVITIES.length)
+          ];
+        }
+
+        return matchedActivities[
+          Math.floor(Math.random() * matchedActivities.length)
+        ];
+      }
+
       async function getSuggestion() {
         const timeInput = document.getElementById("time-val").value;
-        if (!timeInput) { alert("Please pick or enter a time first."); return; }
+        if (!timeInput || parseInt(timeInput) < 1) {
+          alert("Please pick or enter a time first.");
+          return;
+        }
         selectedTime = parseInt(timeInput);
 
-        const checked = [...document.querySelectorAll('input[name="interests"]:checked')].map(c => c.value);
+        const selectedInterests = getSelectedInterests();
 
-        // Show loading
         document.getElementById("form-card").style.display = "none";
         document.getElementById("loading-section").style.display = "block";
 
         const body = new URLSearchParams({
           user_id: 1,
           time: selectedTime,
-          surprise: isSurprise ? "1" : "0"
+          surprise: isSurprise ? "1" : "0",
         });
-        if (!isSurprise) checked.forEach(i => body.append("interests", i));
+        if (!isSurprise && selectedInterests.length > 0) {
+          selectedInterests.forEach((i) => body.append("interests", i));
+        }
 
         try {
           const res = await fetch(`${API}/suggest`, { method: "POST", body });
           const data = await res.json();
           currentSuggestion = data.suggestion || "Take a short walk outside.";
-        } catch(e) {
-          currentSuggestion = "Take a short walk outside and breathe some fresh air.";
+        } catch (e) {
+          console.log("Server not running, using local activity matcher");
+          if (isSurprise) {
+            currentSuggestion =
+              GENERAL_ACTIVITIES[
+                Math.floor(Math.random() * GENERAL_ACTIVITIES.length)
+              ];
+          } else {
+            currentSuggestion = getMatchingActivity(selectedInterests);
+          }
         }
 
-        // Show locked card
         document.getElementById("loading-section").style.display = "none";
-        document.getElementById("suggestion-text").textContent = currentSuggestion;
+        document.getElementById("suggestion-text").textContent =
+          currentSuggestion;
         document.getElementById("locked-card").style.display = "block";
 
-        // Start timer
         startTimer(selectedTime * 60);
       }
 
@@ -307,9 +938,12 @@
         const circumference = 553;
 
         function tick() {
-          const mins = Math.floor(timerLeft / 60).toString().padStart(2, "0");
+          const mins = Math.floor(timerLeft / 60)
+            .toString()
+            .padStart(2, "0");
           const secs = (timerLeft % 60).toString().padStart(2, "0");
-          document.getElementById("timer-display").textContent = `${mins}:${secs}`;
+          document.getElementById("timer-display").textContent =
+            `${mins}:${secs}`;
 
           const progress = timerLeft / timerTotal;
           circle.style.strokeDashoffset = circumference * (1 - progress);
@@ -337,24 +971,36 @@
             body: new URLSearchParams({
               user_id: 1,
               activity: currentSuggestion,
-              time_spent: Math.round(timeSpent / 60) || selectedTime
-            })
+              time_spent: Math.round(timeSpent / 60) || selectedTime,
+            }),
           });
-        } catch(e) {}
+        } catch (e) {
+          console.log("Log saved locally");
+        }
 
         document.getElementById("locked-card").style.display = "none";
         document.getElementById("done-section").style.display = "block";
         document.getElementById("done-sub").textContent =
-          `You spent ${Math.round((timerTotal - timerLeft)/60) || selectedTime} minutes on something real.`;
+          `You spent ${Math.round((timerTotal - timerLeft) / 60) || selectedTime} minutes on something real. 🎯`;
       }
 
       function confirmSkip() {
-        if (confirm("You're giving up? That's okay this time. It will be logged as skipped.")) {
+        if (
+          confirm(
+            "You're giving up? That's okay this time. It will be logged as skipped.",
+          )
+        ) {
           clearInterval(timerInterval);
           document.getElementById("locked-card").style.display = "none";
           document.getElementById("form-card").style.display = "block";
+          document.getElementById("timer-display").textContent = "--:--";
+          document.getElementById("done-btn").textContent = "✓ I Did It!";
         }
       }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        buildInterests();
+      });
     </script>
   </body>
 </html>
