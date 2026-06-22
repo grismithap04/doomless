@@ -336,6 +336,18 @@ main {
   background: var(--accent);
   color: #1C1A17;
   box-shadow: 0 4px 20px -6px rgba(200, 169, 126, 0.4);
+  display: block;
+  width: 100%;
+  padding: 0.85rem 1.8rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
 }
 .btn-primary:hover {
   background: var(--accent-hover);
@@ -747,3 +759,37 @@ code {
   .bubble3 { bottom: 50px; left: 24px; }
   .bubble4 { bottom: 12px; right: 14px; }
 }
+
+/* ---- SUGGEST PAGE ---- */
+#timer-section { text-align: center; padding: 2rem 1rem; }
+#loading-section { display: none; text-align: center; padding: 3rem 1rem; }
+#done-section { display: none; text-align: center; padding: 2rem 1rem; }
+
+.timer-ring { position: relative; width: 200px; height: 200px; margin: 0 auto 1.5rem; }
+.timer-ring svg { transform: rotate(-90deg); }
+.timer-ring circle { fill: none; stroke-width: 8; }
+.timer-ring .bg { stroke: rgba(200, 169, 126, 0.1); }
+.timer-ring .progress { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2.2rem; font-weight: 700; font-family: "Cormorant Garamond", serif; color: var(--accent); }
+
+.locked-activity { background: rgba(200, 169, 126, 0.06); border: 1px solid rgba(200, 169, 126, 0.2); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; font-family: "Cormorant Garamond", serif; font-size: 1.2rem; line-height: 1.7; color: var(--text); }
+.locked-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 0.75rem; font-weight: 600; }
+.commitment-msg { font-size: 0.9rem; color: var(--muted); margin-bottom: 1.5rem; font-style: italic; }
+
+.done-emoji { font-size: 4rem; margin-bottom: 1rem; }
+.done-title { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; font-family: "Cormorant Garamond", serif; color: var(--accent); }
+.done-sub { color: var(--muted); margin-bottom: 1.5rem; font-style: italic; }
+
+.spinner { width: 48px; height: 48px; border: 3px solid rgba(200, 169, 126, 0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.surprise-badge { display: inline-block; background: rgba(200, 169, 126, 0.1); border: 1px solid rgba(200, 169, 126, 0.25); color: var(--accent); font-size: 0.8rem; padding: 0.25rem 0.75rem; border-radius: 50px; margin-bottom: 1rem; }
+
+.btn-done { background: var(--accent); color: #1C1A17; border: none; padding: 1rem 2.5rem; border-radius: 999px; font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%; margin-bottom: 0.75rem; transition: all 0.2s; font-family: var(--font); }
+.btn-done:hover { background: var(--accent-hover); transform: translateY(-2px); }
+.btn-skip { background: transparent; border: 1px solid rgba(200, 169, 126, 0.15); color: var(--muted); padding: 0.6rem 1.5rem; border-radius: 999px; font-size: 0.85rem; cursor: pointer; width: 100%; transition: all 0.2s; font-family: var(--font); }
+.btn-skip:hover { color: var(--text); border-color: rgba(200, 169, 126, 0.3); }
+
+.interest-btn { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--surface2); border: 1px solid rgba(200, 169, 126, 0.1); border-radius: 50px; cursor: pointer; color: var(--muted); font-family: var(--font); font-size: 0.88rem; font-weight: 500; transition: all 0.25s ease; position: relative; }
+.interest-btn:hover { border-color: rgba(200, 169, 126, 0.3); color: var(--text); transform: translateY(-2px); }
+.interest-btn.active { background: rgba(200, 169, 126, 0.12); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 16px rgba(200, 169, 126, 0.2); transform: scale(1.03); }
