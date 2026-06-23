@@ -1,194 +1,202 @@
 # Doomless — Beat the Scroll
 
-Stop doomscrolling. Start doing.
+> You have free time. Use it well. Stop doomscrolling. Start doing.
 
-Doomless is a web application that helps you use your free time intentionally. Instead of aimlessly scrolling through social media, get personalized activity suggestions powered by AI.
-
-## Features
-
-- Personalized Suggestions — Get activity recommendations based on your interests and available time
-- Quick Actions — One-click access to get suggestions or surprise activities
-- Progress Tracking — See your total activities, daily progress, and time saved
-- Glassmorphism UI — Modern, elegant, and pleasing visual design
-- AI-Powered — Uses Groq API for intelligent activity suggestions
-- Data Export — Export your activity history to JSON
-
-## Tech Stack
-
-- HTML/CSS — Frontend UI
-- AWK — Backend server
-- Python — Alternative backend
-- PostgreSQL — Database
-- Groq API — AI suggestions
-- Git — Version control
-
-## Project Structure
-
-doomless/
-├── backend/
-│   ├── server.awk        # AWK backend server
-│   ├── server.py         # Python backend (alternative)
-│   ├── log.awk           # Logging utility
-│   └── suggest.awk       # Suggestion engine
-├── db/
-│   ├── schema.sql        # Database schema
-│   ├── functions.sql     # Database functions
-│   └── seed.sql          # Seed data
-├── frontend/
-│   ├── index.html        # Main page
-│   ├── style.css         # Styles
-│   ├── suggest.html      # Suggestion page
-│   └── interests.html    # Interests management
-├── sheets/
-│   ├── sheets.sh         # Groq API integration
-│   └── .env              # API keys (local only)
-└── README.md
-
-## Getting Started
-
-### Prerequisites
-
-- Git — For cloning the repository
-- AWK — For running the backend server
-- PostgreSQL — For the database
-- Groq API Key — For AI suggestions
-
-### 1. Clone the Repository
-
-git clone https://github.com/grismithap04/doomless.git
-cd doomless
-
-### 2. Set Up the Database
-
-psql -U postgres
-CREATE DATABASE doomless;
-\i db/schema.sql
-\i db/functions.sql
-\i db/seed.sql
-
-### 3. Configure Environment
-
-cp .env.example .env
-# Edit with your credentials
-# Add your Groq API key
-
-### 4. Start the Backend Server
-
-Using AWK:
-cd backend
-awk -f server.awk
-
-Using Python (alternative):
-cd backend
-python server.py
-
-### 5. Open the Frontend
-
-Open frontend/index.html in your browser, or use a local server:
-
-python -m http.server 8000
-
-## Setting Up Groq API
-
-### 1. Get Your API Key
-
-1. Go to console.groq.com
-2. Sign up or log in
-3. Go to API Keys
-4. Click Create API Key
-5. Copy the key (starts with gsk_)
-
-### 2. Configure the Sheets Script
-
-cd sheets
-./sheets.sh setup
-# Enter your Groq API key when prompted
-
-### 3. Test the Connection
-
-./sheets.sh test
-# Should show: Groq API connection successful!
-
-## Using the Sheets Script
-
-The sheets.sh script manages data export and API integration:
-
-- ./sheets.sh help — Show all commands
-- ./sheets.sh setup — Configure Groq API key
-- ./sheets.sh test — Test API connection
-- ./sheets.sh export — Export activities to JSON
-- ./sheets.sh config — Show current settings
-
-Example usage:
-cd sheets
-./sheets.sh export  # Exports to data/export_*.json
-
-## How It Works
-
-1. Set Your Time — Tell the app how many minutes you have free
-2. Pick Interests — Choose what you enjoy (running, music, baking, etc.)
-3. Get a Suggestion — Groq AI recommends a focused activity
-4. Log It — Mark it done and track your progress
-
-## Browser Support
-
-- Chrome 90+
-- Firefox 88+
-- Edge 90+
-- Safari 14+
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (git checkout -b feature/amazing)
-3. Commit your changes (git commit -m 'Add amazing feature')
-4. Push to the branch (git push origin feature/amazing)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License.
-
-## Team
-
-- Grishmitha — Project Owner
-- Kaanasreek — Contributor
-- Pondharani — Contributor
-- Sowbaranika — Contributor
-
-## Acknowledgments
-
-- Groq — For AI API
-- Font Awesome — For icons
-- Google Fonts — For typography
-
-## Troubleshooting
-
-### Backend won't start
-
-Check if port 8080 is in use:
-netstat -ano | findstr :8080
-
-Kill the process using the port:
-Windows: taskkill /PID <PID> /F
-Linux: kill -9 <PID>
-
-### API connection fails
-
-Test Groq API key:
-cd sheets
-./sheets.sh test
-
-If fails, recreate the key at console.groq.com
-
-### Database connection issues
-
-Check PostgreSQL status:
-sudo systemctl status postgresql
-
-Restart PostgreSQL:
-sudo systemctl restart postgresql
+Doomless is a productivity app that suggests one focused activity based on your interests and available time. Built in a single night hackathon sprint.
 
 ---
 
-Made by the Doomless Team
+## What It Does
+
+1. **Set your time** — tell the app how many minutes you have free
+2. **Pick interests** — select what you're into (guitar, cooking, photography, etc.)
+3. **Get a suggestion** — Groq AI suggests one specific, focused activity
+4. **Commit** — a timer locks you in. No scrolling. Just do it.
+5. **Log it** — activity is saved to Postgres and synced to Google Sheets
+
+---
+
+## Stack
+
+| Layer | Tech | Why |
+|-------|------|-----|
+| Backend | Python + Flask | Simple HTTP server with clean routes |
+| Database | PostgreSQL | Stores users, interests, activity logs |
+| AI | Groq API (llama-3.1-8b-instant) | Fast, free-tier LLM for activity suggestions |
+| Frontend | Vanilla HTML + CSS + JS | Zero dependencies, no build step |
+| Sync | Google Sheets via Apps Script | Automatic activity backup |
+
+---
+
+## Project Structure
+
+```
+doomless/
+├── backend/
+│   ├── server.py        — Flask server, all routes
+│   └── server.awk       — original Awk server (archived)
+├── db/
+│   ├── schema.sql       — tables: users, interests, activity_log
+│   ├── functions.sql    — stored procedures
+│   └── seed.sql         — sample interests for testing
+├── frontend/
+│   ├── index.html       — landing page + stats
+│   ├── suggest.html     — activity suggestion + timer
+│   ├── interests.html   — interests checklist
+│   ├── history.html     — past activities log
+│   └── style.css        — one CSS file, Candlelit Scholar palette
+├── gemini/
+│   ├── prompt.txt       — base prompt template
+│   └── call.sh          — curl wrapper (archived)
+├── sheets/
+│   └── sheets.sh        — Google Sheets sync script
+├── .env.example         — environment variable template
+├── .gitignore
+└── README.md
+```
+
+---
+
+## Architecture
+
+```
+Browser (HTML/CSS/JS)
+        ↓ fetch()
+Flask Server (port 8080)
+        ↓                    ↓
+  PostgreSQL DB         Groq API
+  (interests,           (llama-3.1-8b)
+   activity_log)
+        ↓
+  Google Sheets
+  (Apps Script webhook)
+```
+
+---
+
+## How to Run
+
+### 1. Prerequisites
+
+```bash
+# Install dependencies
+sudo apt install postgresql python3-pip
+pip3 install flask --break-system-packages
+```
+
+### 2. Set up PostgreSQL
+
+```bash
+sudo -u postgres psql
+CREATE DATABASE doomless;
+\q
+
+sudo -u postgres psql -d doomless -f db/schema.sql
+
+# Create a user
+sudo -u postgres psql -d doomless -c "INSERT INTO users (id, name) VALUES (1, 'yourname');"
+```
+
+### 3. Configure environment
+
+```bash
+cp .env.example .env
+nano .env
+```
+
+Fill in:
+```
+GROQ_API_KEY=your_groq_key_here
+SHEETS_URL=your_apps_script_webhook_url
+```
+
+Get a free Groq API key at: https://console.groq.com
+
+### 4. Set up Google Sheets (optional)
+
+1. Create a new Google Sheet at https://sheets.google.com
+2. Go to Extensions → Apps Script
+3. Paste this code:
+
+```javascript
+function doPost(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const data = JSON.parse(e.postData.contents);
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['User ID', 'Activity', 'Time Spent (min)', 'Logged At']);
+  }
+  sheet.appendRow([data.user_id, data.activity, data.time_spent, data.logged_at]);
+  return ContentService.createTextOutput(JSON.stringify({status: 'ok'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+```
+
+4. Deploy as Web App → Execute as Me → Anyone can access
+5. Copy the webhook URL into `.env` as `SHEETS_URL`
+
+### 5. Allow passwordless postgres access
+
+```bash
+sudo visudo
+# Add this line:
+yourusername ALL=(postgres) NOPASSWD: /usr/bin/psql
+```
+
+### 6. Start the server
+
+```bash
+export $(cat .env | xargs) && python3 backend/server.py
+```
+
+Open your browser at: **http://localhost:8080**
+
+---
+
+## API Routes
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/` | Landing page |
+| GET | `/suggest.html` | Suggestion page |
+| GET | `/interests.html` | Interests page |
+| GET | `/history.html` | History page |
+| GET | `/interests?user_id=1` | Fetch user interests |
+| POST | `/interests` | Save user interests |
+| POST | `/suggest` | Get AI activity suggestion |
+| POST | `/surprise` | Get surprise suggestion (no filters) |
+| POST | `/log` | Log completed activity |
+| GET | `/history?user_id=1` | Fetch activity history |
+
+---
+
+## Prompting Strategy
+
+Groq is prompted with strict constraints to keep suggestions focused:
+
+```
+The user has exactly {time} minutes free. They want to do something 
+related to: {interests}. Suggest ONE specific activity directly related 
+to {interests}. Start with the interest topic directly. Give only the 
+activity name and one sentence description. No lists, no markdown, no asterisks.
+```
+
+This prevents generic suggestions and forces the model to stay on topic.
+
+---
+
+## Design
+
+**Palette: Candlelit Scholar**
+- Background: `#1C1A17` — old wood, candlelight
+- Surface: `#2A2620` — aged paper
+- Accent: `#C8A97E` — amber gold
+- Text: `#EDE8DF` — warm cream
+- Muted: `#7A7268` — faded ink
+
+Fonts: Cormorant Garamond (headings) + Inter (body)
+
+---
+
+## Built By
+
+Grismitha — built in one evening as a hackathon project.
