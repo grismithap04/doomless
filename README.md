@@ -200,3 +200,65 @@ Fonts: Cormorant Garamond (headings) + Inter (body)
 ## Built By
 
 Grismitha — built in one evening as a hackathon project.
+
+---
+
+## Troubleshooting
+
+### Backend won't start
+Check if port 8080 is in use:
+```bash
+netstat -ano | findstr :8080
+```
+Kill the process using the port:
+```bash
+# Windows
+taskkill /PID <PID> /F
+# Linux
+kill -9 <PID>
+```
+
+### API connection fails
+Test Groq API key:
+```bash
+cd sheets
+./sheets.sh test
+```
+If fails, recreate the key at https://console.groq.com
+
+### Database connection issues
+Check PostgreSQL status:
+```bash
+sudo systemctl status postgresql
+```
+Restart PostgreSQL:
+```bash
+sudo systemctl restart postgresql
+```
+
+---
+
+## Team
+
+- **Grismitha** — Project Owner
+- **Kaanasree** — Contributor
+- **Pondharani** — Contributor
+- **Sowbaranika** — Contributor
+
+---
+
+## Acknowledgments
+
+- [Groq](https://console.groq.com) — For AI API
+- [Font Awesome](https://fontawesome.com) — For icons
+- [Google Fonts](https://fonts.google.com) — For typography
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+*Made with ☕ by the Doomless Team*
