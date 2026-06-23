@@ -36,9 +36,7 @@ doomless/
 │   ├── server.py        — Flask server, all routes
 │   └── server.awk       — original Awk server (archived)
 ├── db/
-│   ├── schema.sql       — tables: users, interests, activity_log
-│   ├── functions.sql    — stored procedures
-│   └── seed.sql         — sample interests for testing
+│   └── schema.sql       — tables: users, interests, activity_log
 ├── frontend/
 │   ├── index.html       — landing page + stats
 │   ├── suggest.html     — activity suggestion + timer
