@@ -105,7 +105,16 @@
         <div class="card" id="locked-card" style="display: none">
           <div id="timer-section">
             <div class="locked-label">🔒 You're committed to this</div>
-            <div class="locked-activity" id="suggestion-text"></div>
+
+            <div class="locked-activity" id="suggestion-block">
+              <div id="suggestion-title" style="font-weight: 700; margin-bottom: 0.4rem;"></div>
+              <div id="suggestion-text" style="font-size: 1rem; margin-bottom: 0.75rem;"></div>
+              <div style="display:flex; gap:0.5rem; flex-wrap:wrap; font-family:'Inter',sans-serif;">
+                <span class="tag time" id="suggestion-duration"></span>
+                <span class="tag" id="suggestion-category"></span>
+              </div>
+            </div>
+
             <p class="commitment-msg">No skipping. No scrolling. Just do it.</p>
 
             <div class="timer-ring">
@@ -172,7 +181,8 @@
       let timerInterval = null;
       let timerTotal = 0;
       let timerLeft = 0;
-      let currentSuggestion = "";
+      let currentSuggestion = ""; // plain-text version used for logging/history
+      let currentSuggestionObj = null; // parsed {title, recommendation, duration_minutes, category}
 
       const DEFAULT_INTERESTS = [
         { emoji: "🏃", label: "Running" },
@@ -192,7 +202,7 @@
         { emoji: "🌱", label: "Gardening" },
       ];
 
-      // COMPLETE ACTIVITY DATABASE
+      // COMPLETE ACTIVITY DATABASE (used as local fallback only, when server unreachable)
       const ACTIVITY_DATABASE = {
         Meditation: [
           "🧘 Practice guided meditation for 10 minutes",
@@ -397,6 +407,33 @@
         ];
       }
 
+      // Renders currentSuggestionObj (or a plain string fallback) into the locked card
+      function renderSuggestion() {
+        const titleEl = document.getElementById("suggestion-title");
+        const textEl = document.getElementById("suggestion-text");
+        const durationEl = document.getElementById("suggestion-duration");
+        const categoryEl = document.getElementById("suggestion-category");
+
+        if (currentSuggestionObj) {
+          titleEl.textContent = currentSuggestionObj.title || "";
+          textEl.textContent = currentSuggestionObj.recommendation || "";
+          durationEl.textContent = currentSuggestionObj.duration_minutes
+            ? `⏱ ${currentSuggestionObj.duration_minutes} min`
+            : "";
+          categoryEl.textContent = currentSuggestionObj.category
+            ? `🏷 ${currentSuggestionObj.category}`
+            : "";
+          durationEl.style.display = currentSuggestionObj.duration_minutes ? "inline-block" : "none";
+          categoryEl.style.display = currentSuggestionObj.category ? "inline-block" : "none";
+        } else {
+          // Plain-text fallback (e.g. local activity matcher when server is unreachable)
+          titleEl.textContent = "";
+          textEl.textContent = currentSuggestion;
+          durationEl.style.display = "none";
+          categoryEl.style.display = "none";
+        }
+      }
+
       async function getSuggestion() {
         const timeInput = document.getElementById("time-val").value;
         if (!timeInput || parseInt(timeInput) < 1) {
@@ -419,10 +456,24 @@
           selectedInterests.forEach((i) => body.append("interests", i));
         }
 
+        currentSuggestionObj = null;
+
         try {
           const res = await fetch(`${API}/suggest`, { method: "POST", body });
           const data = await res.json();
-          currentSuggestion = data.suggestion || "Take a short walk outside.";
+
+          // The backend returns `suggestion` as a JSON-encoded string
+          // e.g. '{"title": "...", "recommendation": "...", "duration_minutes": 30, "category": "..."}'
+          try {
+            currentSuggestionObj = JSON.parse(data.suggestion);
+            currentSuggestion =
+              (currentSuggestionObj.title ? currentSuggestionObj.title + " — " : "") +
+              (currentSuggestionObj.recommendation || "");
+          } catch (parseErr) {
+            // Not JSON — treat as a plain string suggestion
+            currentSuggestion = data.suggestion || "Take a short walk outside.";
+            currentSuggestionObj = null;
+          }
         } catch (e) {
           console.log("Server not running, using local activity matcher");
           if (isSurprise) {
@@ -433,11 +484,11 @@
           } else {
             currentSuggestion = getMatchingActivity(selectedInterests);
           }
+          currentSuggestionObj = null;
         }
 
         document.getElementById("loading-section").style.display = "none";
-        document.getElementById("suggestion-text").textContent =
-          currentSuggestion;
+        renderSuggestion();
         document.getElementById("locked-card").style.display = "block";
 
         startTimer(selectedTime * 60);
