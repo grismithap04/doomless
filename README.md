@@ -195,12 +195,6 @@ Fonts: Cormorant Garamond (headings) + Inter (body)
 
 ---
 
-## Built By
-
-Grismitha — built in one evening as a hackathon project.
-
----
-
 ## Troubleshooting
 
 ### Backend won't start
