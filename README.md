@@ -232,10 +232,10 @@ sudo systemctl restart postgresql
 
 ## Team
 
-- **Grismitha** — Project Owner
-- **Kaanasree** — Contributor
-- **Pondharani** — Contributor
-- **Sowbaranika** — Contributor
+- **Grismitha** 
+- **Kaanasree** 
+- **Pondharani** 
+- **Sowbaranika** 
 
 ---
 
